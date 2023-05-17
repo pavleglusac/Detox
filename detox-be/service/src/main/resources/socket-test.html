@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Sock.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1>Test Sock.js</h1>
+
+
+    <button onclick="sendMessage()">Send message</button>
+    <script>
+        var socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+        // set allowCredentials = true
+        stompClient.allowCredentials = true;
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/queue/reply', function (greeting) {
+                alert(greeting);
+            });
+        });
+
+        function sendMessage() {
+            stompClient.send("/app/hello", {}, "porukica");
+        }
+    </script>
+
+</body>
+</html>

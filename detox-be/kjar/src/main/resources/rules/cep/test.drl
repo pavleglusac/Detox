@@ -1,0 +1,17 @@
+package cep;
+
+import com.sbnz.admin.model.*;
+
+rule "Hello world"
+    when
+        $s : String( )
+    then
+        System.out.println( "String added: " + $s );
+end
+
+rule "Got a greeting!"
+    when
+        $g: Greeting(m: content)
+    then
+        System.out.println("DOBIO KONTENT ALO: " + m);
+end
