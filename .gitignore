@@ -1,0 +1,8 @@
+
+detox-be/.idea/
+
+detox-be/kjar/.mvn/wrapper/
+
+detox-be/service/.mvn/wrapper/maven-wrapper.properties
+
+*.db
