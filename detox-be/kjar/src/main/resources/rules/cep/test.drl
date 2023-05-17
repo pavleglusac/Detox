@@ -1,6 +1,6 @@
 package cep;
 
-import com.sbnz.admin.model.*;
+import com.sbnz.detox.model.*;
 
 rule "Hello world"
     when

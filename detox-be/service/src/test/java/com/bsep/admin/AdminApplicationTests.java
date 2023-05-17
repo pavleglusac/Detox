@@ -1,12 +1,5 @@
-package com.sbnz.admin;
+package com.sbnz.detox;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.OIDTokenizer;
-import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
-import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.Extensions;
-import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
