@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/services/auth.service';
+import { tokenName } from 'src/app/shared/constants';
 
 @Component({
   selector: 'app-login',
@@ -32,7 +34,7 @@ export class LoginComponent {
     ]),
   });
 
-  constructor(private authenticationService: AuthService, private toastr: ToastrService) { 
+  constructor(private authenticationService: AuthService, private toastr: ToastrService, private router: Router) { 
     document.getElementById('login-email')?.focus();
   }
 
@@ -44,9 +46,10 @@ export class LoginComponent {
     await this.authenticationService.login(
       this.email?.value!,
       this.password?.value!,
-      () => {
+      (value) => {
+        localStorage.setItem(tokenName, value);
         this.toastr.success('Login successful');
-        window.location.href = '/home';
+        this.router.navigate(['/']);
       },
       (error: any) => {
         this.toastr.error(error.message, 'Login failed');

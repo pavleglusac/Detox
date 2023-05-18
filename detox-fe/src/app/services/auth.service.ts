@@ -11,13 +11,13 @@ export class AuthService {
   login = (
     email: string, 
     password: string, 
-    successCb: () => void,
+    successCb: (value: any) => void,
     errorCb: (error: any) => void) => {
       this.http
       .post('api/auth/login', { email, password})
       .subscribe({
         next(value: any) {
-          successCb();
+          successCb(value);
         },
         error(err: any) {
           errorCb(err.error);
