@@ -12,7 +12,7 @@
           </label>
           <input class="input"
           [ngClass]="email && email.value ? 'border-light' : 'border-medium'"
-          id="login-email" type="text" placeholder="Your E-Mail Address" autofocus="autofocus"
+          id="login-email" type="text" placeholder="Vaša E-Mail adresa" autofocus="autofocus"
           formControlName="email"
           (input)="errorMessage = ''">
           <div class="h-1">
@@ -35,7 +35,7 @@
           </label>
           <input class="input"
           [ngClass]="password && password.value ? 'border-light' : 'border-medium'"
-          id="login-password" type="password" placeholder="Your Password" formControlName="password"
+          id="login-password" type="password" placeholder="Vaša lozinka" formControlName="password"
           (input)="errorMessage = ''">
           <div class="h-1">
             <p *ngIf="password && password.invalid && password.touched"
