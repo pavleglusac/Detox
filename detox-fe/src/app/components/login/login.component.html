@@ -1,7 +1,7 @@
 <div class="min-h-screen h-full w-full bg-dark flex flex-col justify-center">
 
     <div class="w-11/12 sm:w-[35rem] mx-auto text-left  backdrop-brightness-150 p-10 px-20 rounded-lg">
-      <h1 class="text-3xl font-bold text-white" id="login-header">Log in</h1>
+      <h1 class="text-3xl font-bold text-white" id="login-header">Prijava</h1>
   
       <form [formGroup]="loginForm" (submit)="onSubmit()">
       <div class="flex flex-col gap-y-6 mt-10 mb-12 tracking-wide">
@@ -10,9 +10,7 @@
           for="login-email">
             E-Mail
           </label>
-          <input class="appearance-none block w-full text-white tracking-wide
-          placeholder-medium caret-medium border-b focus:border-accent
-          bg-transparent leading-tight outline-none py-1 focus:transition-color duration-300"
+          <input class="input"
           [ngClass]="email && email.value ? 'border-light' : 'border-medium'"
           id="login-email" type="text" placeholder="Your E-Mail Address" autofocus="autofocus"
           formControlName="email"
@@ -21,10 +19,10 @@
             <p *ngIf="email && email.invalid && email.touched"
               class="text-yellow-400 text-xs italic">
               <span *ngIf="email.errors?.['required']" id="email-required">
-                Email is required.
+                Email je obavezan.
               </span>
               <span *ngIf="email.errors?.['pattern']" id="email-invalid">
-                Email is not valid.
+                Email nije validan.
               </span>
             </p>
           </div>
@@ -33,11 +31,9 @@
         <div class="w-full">
           <label class="block tracking-wide text-medium text-xs font-bold mb-1"
           for="login-password">
-            Password
+            Lozinka
           </label>
-          <input class="appearance-none block w-full text-white tracking-wide
-          placeholder-medium caret-medium border-b focus:border-accent
-          bg-transparent leading-tight outline-none py-1 focus:transition-color duration-300"
+          <input class="input"
           [ngClass]="password && password.value ? 'border-light' : 'border-medium'"
           id="login-password" type="password" placeholder="Your Password" formControlName="password"
           (input)="errorMessage = ''">
@@ -45,7 +41,7 @@
             <p *ngIf="password && password.invalid && password.touched"
               class="text-yellow-400 text-xs italic">
               <span *ngIf="password.errors?.['required']" id="password-required">
-                Password is required.
+                Lozinka je obavezna.
               </span>
             </p>
           </div>
@@ -53,8 +49,8 @@
         
       </div>
       <div class="w-full flex justify-end">
-        <button type="submit" class="rounded p-3 px-7 bg-accent active:bg-accent-dark text-white font-medium tracking-wide" id="login-button">
-          LOGIN
+        <button type="submit" class="main-button" id="login-button">
+          PRIJAVI SE
         </button>
       </div>
       <div class="h-1">

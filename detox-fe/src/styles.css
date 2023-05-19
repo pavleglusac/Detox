@@ -5,3 +5,11 @@
 html, body {
   height: 100%;
 }
+
+.main-button {
+  @apply rounded p-3 px-7 bg-accent active:bg-accent-dark text-white font-medium tracking-wide
+}
+
+.input {
+  @apply appearance-none block w-full text-white tracking-wide placeholder-medium caret-medium border-b focus:border-accent bg-transparent leading-tight outline-none py-1 duration-300
+}

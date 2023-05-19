@@ -11,7 +11,7 @@
             <a (click)="navigate(option.link)" class="cursor-pointer hover:text-accent">{{option.title}}</a>
           </li>
           <li class="h-12 flex items-end py-4 px-5">
-            <a class="text-accent cursor-pointer">Log out</a>
+            <a class="text-accent cursor-pointer" (click)="logout()">Odjavi se</a>
           </li>
         </ul>
       </div>

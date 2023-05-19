@@ -1,5 +1,6 @@
 package com.sbnz.detox.auth;
 
+import com.sbnz.detox.auth.dto.LoggedUserDto;
 import com.sbnz.detox.auth.dto.LoginRequest;
 import com.sbnz.detox.auth.dto.TokenResponse;
 import com.sbnz.detox.model.User;
@@ -30,8 +31,11 @@ public class AuthController {
 		return "Privileged";
 	}
 
-
-
+	@GetMapping("/my-profile")
+	public ResponseEntity<LoggedUserDto> getLoggedUserInfo(Authentication authentication) {
+		User user = (User) authentication.getPrincipal();
+		return ResponseEntity.ok(new LoggedUserDto(user.getId(), user.getName(), user.getEmail(), user.getImageUrl(), user.getRoles().get(0).getName()));
+	}
 
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
