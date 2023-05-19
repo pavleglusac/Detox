@@ -9,7 +9,9 @@ interface MenuOption {
 const doctorMenu: MenuOption[] = [
   { title: 'Diagnose', link: '' },
   { title: 'Queries', link: 'query' },
+  { title: 'Settings', link: 'settings' },
   { title: 'Profile', link: 'profile' },
+
 ]
 
 @Component({

@@ -6,13 +6,15 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { DiagnoseComponent } from './components/diagnose/diagnose.component';
 import { QueryComponent } from './components/query/query.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 const routes: Routes = [
   {path: '', canActivate: [AuthGuard], component: HomepageComponent, 
   children: [
     {path: '', component: DiagnoseComponent},
     {path: 'query', component: QueryComponent},
-    {path: 'profile', component: ProfileComponent}
+    {path: 'profile', component: ProfileComponent},
+    {path: 'settings', component: SettingsComponent}
   ]
   },
   {path: 'login', component: LoginComponent},
