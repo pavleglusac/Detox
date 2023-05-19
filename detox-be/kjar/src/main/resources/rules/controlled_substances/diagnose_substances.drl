@@ -1,0 +1,226 @@
+package controlled_substances;
+
+import com.sbnz.detox.model.ControlledSubstancesSymptoms;
+import com.sbnz.detox.model.ChromatographicImunoassayTestResult;
+import com.sbnz.detox.model.Question;
+import com.sbnz.detox.model.DiagnosisResult;
+import com.sbnz.detox.model.UrineTestResult;
+
+
+rule "Chromatographic immunoassay test drugs"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.DRUGS
+                                                && AffectsCNS == null)
+    then
+        insert(new Question("Da li pacijent ima depresiju centralnog nervnog sistema?", "bool"));
+end
+
+
+rule "Chromatographic immunoassay test medicine"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.MEDICINE
+                                                && ReactsToKVS == null)
+    then
+        insert(new Question("Da li pacijent reaguje na KVS?", "bool"));
+end
+
+rule "Patient reacts to KVS"
+    when
+        $symptom: ControlledSubstancesSymptoms(ReactsToKVS == true && TLCBasicTest == null)
+    then
+        insert(new Question("Uraditi TLC test i uneti rezultate.", "bool"));
+end
+
+rule "Patient doesn't react to KVS"
+    when
+        $symptom: ControlledSubstancesSymptoms(ReactsToKVS == false && AffectsCNS == null)
+    then
+        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool"));
+end
+
+
+rule "Has CNS depression MEDICINE"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.MEDICINE
+                                                && AffectsCNS == true
+                                                && InDeepComa == null)
+    then
+        // insert new Question
+        insert(new Question("Da li je pacijent u dubokoj komi?", "bool"));
+end
+
+
+rule "Doesn't have CNS depression MEDICINE"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.MEDICINE
+                                                && AffectsCNS == false
+                                                && HasLungFibrosis == null)
+    then
+        // insert new Question
+        insert(new Question("Da li ima fibrozu pluća?", "multiple"));
+end
+
+rule "Has lung fibrosis"
+    when
+        $symptom: ControlledSubstancesSymptoms(HasLungFibrosis == true)
+    then
+        insert(new DiagnosisResult("CIKLOSPORIN"));
+end
+
+
+rule "Doesn't have lung fibrosis"
+    when
+        $symptom: ControlledSubstancesSymptoms(HasLungFibrosis == false && HasARDS == null)
+    then
+        insert(new Question("Da li dolazi do ARDS?", "bool"));
+end
+
+rule "Has ARDS"
+    when
+        $symptom: ControlledSubstancesSymptoms(HasARDS == true)
+    then
+        insert(new DiagnosisResult("BLEOMICIN"));
+end
+
+rule "Doesn't have ARDS"
+    when
+        $symptom: ControlledSubstancesSymptoms(HasARDS == false)
+    then
+        insert(new DiagnosisResult("PENICILIN"));
+end
+
+
+rule "TLCBasicTestPositive"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCBasicTest == true)
+    then
+        insert(new DiagnosisResult("BETA BLOKATORI"));
+end
+
+rule "TLCBasicTestNegative"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCBasicTest == false && AcidityTest == null)
+    then
+        insert(new Question("Uraditi test aciditeta i uneti rezultate.", "bool"));
+end
+
+
+rule "Acidity test positive"
+    when
+        $symptom: ControlledSubstancesSymptoms(AcidityTest == true)
+    then
+        insert(new DiagnosisResult("SALICILATI"));
+end
+
+
+rule "Acidity test negative"
+    when
+        $symptom: ControlledSubstancesSymptoms(AcidityTest == false)
+    then
+        insert(new DiagnosisResult("ACE INHIBITORI"));
+end
+
+
+rule "Patient doesn't reacts to KVS"
+    when
+        $symptom: ControlledSubstancesSymptoms(ReactsToKVS == false && AffectsCNS == null)
+    then
+        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool"));
+end
+
+
+rule "Has CNS depression"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.DRUGS
+                                                && AffectsCNS == true
+                                                && LocksonTest == null)
+    then
+        // insert new Question
+        insert(new Question("Uraditi lokson test i uneti rezultate.", "bool"));
+end
+
+
+rule "Doesn't have CNS depression"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.DRUGS
+                                                && AffectsCNS == false
+                                                && urineTest == UrineTestResult.NOT_TESTED)
+    then
+        // insert new Question
+        insert(new Question("Uraditi test urina i uneti rezultate.", "multiple"));
+end
+
+
+rule "Urine shows 11-hydroxy-9-tetrahydrocannabinol"
+    when
+        $symptom: ControlledSubstancesSymptoms(urineTest.getValue() == 1)
+    then
+        insert(new DiagnosisResult("MARIHUANA"));
+end
+
+
+rule "Urine shows BENZOILECGONINE"
+    when
+        $symptom: ControlledSubstancesSymptoms(urineTest.getValue() == 2)
+    then
+        insert(new DiagnosisResult("KOKAIN"));
+end
+
+
+rule "Urine shows AMPHETAMINE"
+    when
+        $symptom: ControlledSubstancesSymptoms(urineTest.getValue() == 3)
+    then
+        insert(new DiagnosisResult("AMFETAMIN"));
+end
+
+
+rule "Lockson test positive"
+    when
+        $symptom: ControlledSubstancesSymptoms(LocksonTest == true)
+    then
+        // insert new Question
+        insert(new DiagnosisResult("MORFIN"));
+end
+
+
+rule "Lockson test negative"
+    when
+        $symptom: ControlledSubstancesSymptoms(LocksonTest == false && TLCAcidicTest == null)
+    then
+        // insert new Question
+        insert(new Question("Uraditi TLC acidifikovan jod platina test i uneti rezultate", "bool"));
+end
+
+
+rule "TLC negative"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == false)
+    then
+        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija"));
+end
+
+
+rule "TLC positive"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == null)
+    then
+        insert(new Question("Da li pacijent pati od konvulzija?", "bool"));
+end
+
+
+rule "Convulsions positive"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == true)
+    then
+        insert(new DiagnosisResult("TRAMADOL"));
+end
+
+
+rule "Convulsions negative"
+    when
+        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == true)
+    then
+        insert(new DiagnosisResult("CODEINE"));
+end
+
