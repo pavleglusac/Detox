@@ -1,6 +1,7 @@
 package com.sbnz.detox.controller;
 
 import com.github.fge.jsonpatch.JsonPatch;
+import com.sbnz.detox.model.DiagnosisResponse;
 import com.sbnz.detox.service.ControlledSubstancesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,8 @@ public class ControlledSubstancesController {
     private ControlledSubstancesService controlledSubstancesService;
 
     @PatchMapping("/add")
-    public Object addControlledSubstanceSymptom(@RequestParam("diagnosisId") Long diagnosisId,
-                                              @RequestBody JsonPatch patch) {
+    public DiagnosisResponse addControlledSubstanceSymptom(@RequestParam("diagnosisId") Long diagnosisId,
+                                                           @RequestBody JsonPatch patch) {
         return controlledSubstancesService.patchControlledSubstanceSymptom(diagnosisId, patch);
     }
 }

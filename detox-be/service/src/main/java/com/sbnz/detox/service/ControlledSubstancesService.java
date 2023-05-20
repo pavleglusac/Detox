@@ -30,7 +30,7 @@ public class ControlledSubstancesService {
     private KieContainer kieContainer;
 
 
-    public Object patchControlledSubstanceSymptom(Long diagnosisId, JsonPatch patch) {
+    public DiagnosisResponse patchControlledSubstanceSymptom(Long diagnosisId, JsonPatch patch) {
         Diagnosis diagnosis = diagnosisRepository
                                 .findById(diagnosisId)
                                 .orElseThrow(() -> new RuntimeException("Diagnosis not found"));
@@ -53,7 +53,7 @@ public class ControlledSubstancesService {
         return diagnoseSymptoms(symptomsPatched);
     }
 
-    private Object diagnoseSymptoms(ControlledSubstancesSymptoms symptomsPatched) {
+    private DiagnosisResponse diagnoseSymptoms(ControlledSubstancesSymptoms symptomsPatched) {
         // create a new session and insert the diagnosis
         System.out.println("Diagnosing symptoms");
         KieSession kieSession = kieContainer.newKieSession("ksession");

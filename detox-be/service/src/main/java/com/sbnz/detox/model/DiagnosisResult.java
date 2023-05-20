@@ -12,15 +12,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiagnosisResult {
+public class DiagnosisResult extends DiagnosisResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long diagnosisId;
     private String content;
 
+
     public DiagnosisResult(String content) {
         this.content = content;
     }
 
+    @Override
+    String getType() {
+        return "RESULT";
+    }
 }

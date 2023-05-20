@@ -5,6 +5,9 @@ import com.sbnz.detox.model.ChromatographicImunoassayTestResult;
 import com.sbnz.detox.model.Question;
 import com.sbnz.detox.model.DiagnosisResult;
 import com.sbnz.detox.model.UrineTestResult;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 rule "Chromatographic immunoassay test drugs"
@@ -12,7 +15,7 @@ rule "Chromatographic immunoassay test drugs"
         $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.DRUGS
                                                 && AffectsCNS == null)
     then
-        insert(new Question("Da li pacijent ima depresiju centralnog nervnog sistema?", "bool"));
+        insert(new Question("Da li pacijent ima depresiju centralnog nervnog sistema?", "bool", "/affectsCNS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -21,21 +24,21 @@ rule "Chromatographic immunoassay test medicine"
         $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.MEDICINE
                                                 && ReactsToKVS == null)
     then
-        insert(new Question("Da li pacijent reaguje na KVS?", "bool"));
+        insert(new Question("Da li pacijent reaguje na KVS?", "bool", "/reactsToKVS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 rule "Patient reacts to KVS"
     when
         $symptom: ControlledSubstancesSymptoms(ReactsToKVS == true && TLCBasicTest == null)
     then
-        insert(new Question("Uraditi TLC test i uneti rezultate.", "bool"));
+        insert(new Question("Uraditi TLC test i uneti rezultate.", "bool", "/tlcbasicTest", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 rule "Patient doesn't react to KVS"
     when
         $symptom: ControlledSubstancesSymptoms(ReactsToKVS == false && AffectsCNS == null)
     then
-        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool"));
+        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool", "/affectsCNS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -46,7 +49,7 @@ rule "Has CNS depression MEDICINE"
                                                 && InDeepComa == null)
     then
         // insert new Question
-        insert(new Question("Da li je pacijent u dubokoj komi?", "bool"));
+        insert(new Question("Da li je pacijent u dubokoj komi?", "bool", "/inDeepComa", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -57,7 +60,7 @@ rule "Doesn't have CNS depression MEDICINE"
                                                 && HasLungFibrosis == null)
     then
         // insert new Question
-        insert(new Question("Da li ima fibrozu pluća?", "multiple"));
+        insert(new Question("Da li ima fibrozu pluća?", "bool", "/hasLungFibrosis", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 rule "Has lung fibrosis"
@@ -72,7 +75,7 @@ rule "Doesn't have lung fibrosis"
     when
         $symptom: ControlledSubstancesSymptoms(HasLungFibrosis == false && HasARDS == null)
     then
-        insert(new Question("Da li dolazi do ARDS?", "bool"));
+        insert(new Question("Da li dolazi do ARDS?", "bool", "/hasARDS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 rule "Has ARDS"
@@ -101,7 +104,7 @@ rule "TLCBasicTestNegative"
     when
         $symptom: ControlledSubstancesSymptoms(TLCBasicTest == false && AcidityTest == null)
     then
-        insert(new Question("Uraditi test aciditeta i uneti rezultate.", "bool"));
+        insert(new Question("Uraditi test aciditeta i uneti rezultate.", "bool", "/acidityTest", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -125,7 +128,7 @@ rule "Patient doesn't reacts to KVS"
     when
         $symptom: ControlledSubstancesSymptoms(ReactsToKVS == false && AffectsCNS == null)
     then
-        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool"));
+        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool", "/affectsCNS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -136,7 +139,7 @@ rule "Has CNS depression"
                                                 && LocksonTest == null)
     then
         // insert new Question
-        insert(new Question("Uraditi lokson test i uneti rezultate.", "bool"));
+        insert(new Question("Uraditi lokson test i uneti rezultate.", "bool", "/locksonTest", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -147,7 +150,7 @@ rule "Doesn't have CNS depression"
                                                 && urineTest == UrineTestResult.NOT_TESTED)
     then
         // insert new Question
-        insert(new Question("Uraditi test urina i uneti rezultate.", "multiple"));
+        insert(new Question("Uraditi test urina i uneti rezultate.", "multiple", "/urineTest", new ArrayList<String>(Arrays.asList("PRESENCE_11_HYDROXY_9_TETRAHYDROCANNABINOL", "PRESENCE_BENZOILECGONINE", "PRESENCE_AMPHETAMINE"))));
 end
 
 
@@ -189,7 +192,8 @@ rule "Lockson test negative"
         $symptom: ControlledSubstancesSymptoms(LocksonTest == false && TLCAcidicTest == null)
     then
         // insert new Question
-        insert(new Question("Uraditi TLC acidifikovan jod platina test i uneti rezultate", "bool"));
+        insert(new Question("Uraditi TLC acidifikovan jod platina test i uneti rezultate", "bool", "/tlcacidicTest",
+        new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -197,7 +201,7 @@ rule "TLC negative"
     when
         $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == false)
     then
-        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija"));
+        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>()));
 end
 
 
@@ -205,7 +209,7 @@ rule "TLC positive"
     when
         $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == null)
     then
-        insert(new Question("Da li pacijent pati od konvulzija?", "bool"));
+        insert(new Question("Da li pacijent pati od konvulzija?", "bool", "/convulsions", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
