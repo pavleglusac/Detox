@@ -9,11 +9,11 @@ export class DiagnoseService {
   constructor(private http: HttpClient) { }
 
   startDiagnosis = (
-    email: string,  
+    userEmail: string,  
     successCb: (value: any) => void,
     errorCb: (error: any) => void) => {
       this.http
-      .post('api/diagnose/start', { email })
+      .post(`api/diagnosis/start?userEmail=${userEmail}`,{})
       .subscribe({
         next(value: any) {
           successCb(value);

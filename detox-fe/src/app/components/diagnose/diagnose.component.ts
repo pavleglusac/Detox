@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { Diagnosis } from 'src/app/model/diagnose';
 import { DiagnoseService } from 'src/app/services/diagnose.service';
+import { DiagnosisStateService } from 'src/app/services/store/diagnosis-state.service';
 
 @Component({
   selector: 'app-diagnose',
@@ -12,14 +14,18 @@ import { DiagnoseService } from 'src/app/services/diagnose.service';
   imports: [CommonModule, ReactiveFormsModule]
 })
 export class DiagnoseComponent {
-  started: boolean = false;
+  diagnosis: Diagnosis | null = null;
   loginForm = new FormGroup({
     email: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
     ])})
 
-  constructor(private diagnoseService: DiagnoseService, private toastr: ToastrService) { }
+  constructor(private diagnoseService: DiagnoseService, private toastr: ToastrService, private diagnosisStateService: DiagnosisStateService) { 
+    diagnosisStateService.getDiagnosisState().subscribe((diagnosis: Diagnosis | null) => {
+      this.diagnosis = diagnosis;
+    });
+  }
 
   onSubmit = () => {
     if (this.loginForm.invalid) {
@@ -29,10 +35,10 @@ export class DiagnoseComponent {
     this.diagnoseService.startDiagnosis(
       this.email!.value!,
       (value: any) => {
-        this.started = true;
+        this.diagnosis = new Diagnosis(value);
       },
       (error: any) => {
-        this.started = false;
+        this.diagnosis = null;
         this.toastr.error(error.message);
       }
     );

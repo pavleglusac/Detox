@@ -123,6 +123,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-websocket</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-patch</artifactId>
+            <version>1.13</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 	<build>
