@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public abstract class DiagnosisResponse {
 
-    String type;
+    String responseType;
 
-    abstract String getType();
+    public abstract String getResponseType();
 
 }

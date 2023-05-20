@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
+rule "Start diagnosis"
+    when
+        $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.NOT_TESTED)
+    then
+        insert(new Question("Šta pokazuje hromatografski imunoesej?", "multiple", "/chromatographicImunoassayTest", new ArrayList<String>(Arrays.asList("DRUGS", "MEDICINE"))));
+end
+
 rule "Chromatographic immunoassay test drugs"
     when
         $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.DRUGS
@@ -41,7 +48,6 @@ rule "Patient doesn't react to KVS"
         insert(new Question("Da li pacijent ima depresiju na CNS?", "bool", "/affectsCNS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
-
 rule "Has CNS depression MEDICINE"
     when
         $symptom: ControlledSubstancesSymptoms(chromatographicImunoassayTest == ChromatographicImunoassayTestResult.MEDICINE
@@ -61,6 +67,20 @@ rule "Doesn't have CNS depression MEDICINE"
     then
         // insert new Question
         insert(new Question("Da li ima fibrozu pluća?", "bool", "/hasLungFibrosis", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Is in deep coma"
+    when
+        $symptom: ControlledSubstancesSymptoms(InDeepComa == true)
+    then
+        insert(new DiagnosisResult("BARBITURATI"));
+end
+
+rule "Not in deep coma"
+    when
+        $symptom: ControlledSubstancesSymptoms(InDeepComa == false)
+    then
+        insert(new DiagnosisResult("BENZODIAZEPINI"));
 end
 
 rule "Has lung fibrosis"
@@ -121,14 +141,6 @@ rule "Acidity test negative"
         $symptom: ControlledSubstancesSymptoms(AcidityTest == false)
     then
         insert(new DiagnosisResult("ACE INHIBITORI"));
-end
-
-
-rule "Patient doesn't reacts to KVS"
-    when
-        $symptom: ControlledSubstancesSymptoms(ReactsToKVS == false && AffectsCNS == null)
-    then
-        insert(new Question("Da li pacijent ima depresiju na CNS?", "bool", "/affectsCNS", new ArrayList<String>(Arrays.asList("true", "false"))));
 end
 
 
@@ -201,7 +213,7 @@ rule "TLC negative"
     when
         $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == false)
     then
-        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>()));
+        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>(Arrays.asList("Uradi gasnu hromatografiju"))));
 end
 
 
@@ -223,7 +235,7 @@ end
 
 rule "Convulsions negative"
     when
-        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == true)
+        $symptom: ControlledSubstancesSymptoms(TLCAcidicTest == true && Convulsions == false)
     then
         insert(new DiagnosisResult("CODEINE"));
 end

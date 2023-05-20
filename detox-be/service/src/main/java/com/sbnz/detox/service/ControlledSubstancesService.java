@@ -53,7 +53,7 @@ public class ControlledSubstancesService {
         return diagnoseSymptoms(symptomsPatched);
     }
 
-    private DiagnosisResponse diagnoseSymptoms(ControlledSubstancesSymptoms symptomsPatched) {
+    public DiagnosisResponse diagnoseSymptoms(ControlledSubstancesSymptoms symptomsPatched) {
         // create a new session and insert the diagnosis
         System.out.println("Diagnosing symptoms");
         KieSession kieSession = kieContainer.newKieSession("ksession");
