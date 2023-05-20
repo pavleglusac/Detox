@@ -1,6 +1,7 @@
 package com.sbnz.detox;
 
 import com.sbnz.detox.config.AppProperties;
+import com.sbnz.detox.model.gas_chromatography_drugs.DrugsParams;
 import jakarta.annotation.PostConstruct;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.kie.api.KieServices;
@@ -44,6 +45,23 @@ public class DetoxApplication {
 		KieScanner kScanner = ks.newKieScanner(kContainer);
 		kScanner.start(1000);
 		return kContainer;
+	}
+
+
+	@Bean
+	public DrugsParams drugsParams() {
+		DrugsParams drugsParams = new DrugsParams();
+		drugsParams.setCocaineConcentration(80.0);
+		drugsParams.setCocaineTime(1);
+		drugsParams.setOpioidConcentration(60.0);
+		drugsParams.setOpioidTime(2);
+		drugsParams.setMethamphetamineConcentration(100.0);
+		drugsParams.setMethamphetamineTime(3);
+		drugsParams.setBenzodiazepineConcentration(30.0);
+		drugsParams.setBenzodiazepineTime(4);
+		drugsParams.setSyntheticCannabinoidConcentration(50.0);
+		drugsParams.setSyntheticCannabinoidTime(0);
+		return drugsParams;
 	}
 
 }
