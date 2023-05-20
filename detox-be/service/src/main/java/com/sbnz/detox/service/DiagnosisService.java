@@ -26,6 +26,9 @@ public class DiagnosisService {
     @Autowired
     private ControlledSubstancesService controlledSubstancesService;
 
+    @Autowired
+    private IndustryService industryService;
+
     public Long startDiagnosis(String email) {
 
         Patient patient = patientRepository
@@ -85,6 +88,7 @@ public class DiagnosisService {
         if (symptomsType.equals("INDUSTRY")) {
             symptoms = new IndustrySymptoms();
             industrySymptomsRepository.save((IndustrySymptoms) symptoms);
+            diagnosisResponse = this.industryService.diagnoseSymptoms((IndustrySymptoms) symptoms);
         } else if (symptomsType.equals("CONTROLLED_SUBSTANCES")) {
             symptoms = new ControlledSubstancesSymptoms();
             controlledSubstancesSymptomsRepository.save((ControlledSubstancesSymptoms) symptoms);
