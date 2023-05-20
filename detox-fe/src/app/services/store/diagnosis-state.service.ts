@@ -10,7 +10,7 @@ export class DiagnosisStateService {
   private diagnosisState$ = new BehaviorSubject<Diagnosis | null>(null);
 
   constructor() {
-    const savedState = localStorage.getItem('diagnosisState');
+    const savedState = sessionStorage.getItem('diagnosisState');
 
     if (savedState) {
       const parsedState = JSON.parse(savedState);
@@ -24,11 +24,11 @@ export class DiagnosisStateService {
 
   setDiagnosisState(diagnosis: Diagnosis): void {
     this.diagnosisState$.next(diagnosis);
-    localStorage.setItem('diagnosisState', JSON.stringify(diagnosis));
+    sessionStorage.setItem('diagnosisState', JSON.stringify(diagnosis));
   }
 
   clearDiagnosisState(): void {
     this.diagnosisState$.next(null);
-    localStorage.removeItem('diagnosisState');
+    sessionStorage.removeItem('diagnosisState');
   }
 }

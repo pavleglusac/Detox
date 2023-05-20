@@ -20,7 +20,49 @@
         </div>
     </form>
 
-    <div *ngIf="diagnosis !== null" class="flex flex-col items-start pt-20">
+    <div *ngIf="diagnosis !== null" class="flex flex-col items-center justify-start pt-20 gap-20 w-full relative">
         <p class="text-light text-3xl">DIJAGNOZA</p>
+        <div class="flex gap-x-5 absolute right-5 top-16">
+            <button class="secondary-button">Završi</button>
+            <button class="secondary-button">Resetuj</button>
+        </div>
+        <div class="w-full h-full flex justify-center">
+            <div class="max-h-64 p-12 w-[40%]" *ngIf="unansweredQuestions && unansweredQuestions.length > 0">
+                <div *ngFor="let question of unansweredQuestions" class="flex flex-col gap-4">
+                    <div class="flex gap-5 items-center flex-col">
+                        <p class="text-light text-2xl">{{question.content}}</p>
+
+                        <select *ngIf="question.type === 'bool' || question.type === 'multiple'" class="input w-full" [(ngModel)]="questionAnswer"> <!-- RADI PIPE AKO JE TRUE FALSE DA IDE POZITIVNO NEGATIVNO-->
+                            <option disabled selected value="">Odaberite opciju</option>
+                            <option class="bg-dark text-light" *ngFor="let answer of question.answers" [value]="answer">{{answer | uppercase}}</option>
+                        </select>
+                        <button *ngIf="question.type === 'bool' || question.type === 'multiple'" class="main-button uppercase" (click)="answerQuestion(question)">Odgovori</button>
+
+                        <div *ngIf="question.type === 'gasna-hromatografija'" class="flex gap-5 items-end">
+                            <button class="secondary-button">Započni test</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="answeredQuestions && answeredQuestions.length > 0" class="max-h-64 p-12 overflow-auto flex flex-col gap-12 w-[40%]" [ngClass]="( !result) ? 'border-l border-accent-dark': ''">
+                <div *ngFor="let question of answeredQuestions" class="flex flex-col">
+                    <div class="flex flex-col gap-4"> 
+                        <div class="float-right">
+                            <p class="text-light text-2xl">{{question.content}}</p>
+                            <p class="text-light text-lg">- {{question.answered}}</p>
+                        </div>
+                    </div>  
+                </div>
+                <div #scrollMarker class="mt-5 min-h-[2px]"></div>
+            </div>
+
+
+        </div>
+        <div *ngIf="result" class="flex flex-col gap-4">
+            <p class="text-light text-3xl font-medium">REZULTAT: <span class="text-accent">{{result.content}}</span></p>
+            <button class="main-button" (click)="startAgain()">Započni ponovo</button>
+        </div>
+
     </div>
 </div>

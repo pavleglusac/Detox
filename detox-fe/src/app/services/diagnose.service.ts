@@ -24,5 +24,55 @@ export class DiagnoseService {
       });
     }
 
+  setSymptoms = (
+    id: number,
+    symptom: string,
+    successCb: (value: any) => void,
+    errorCb: (error: any) => void) => {
+      this.http
+      .patch(`api/diagnosis/set-symptoms?diagnosisId=${id}&symptomsType=${symptom}`,{})
+      .subscribe({
+        next(value: any) {
+          successCb(value);
+        },
+        error(err: any) {
+          errorCb(err);
+        },
+      });
+    }
+
+    addControlledSubstancesSymptom = (
+      id: number,
+      data: any,
+      successCb: (value: any) => void,
+      errorCb: (error: any) => void) => {
+        this.http
+        .patch(`api/controlled-substances/add?diagnosisId=${id}`,data)
+        .subscribe({
+          next(value: any) {
+            successCb(value);
+          },
+          error(err: any) {
+            errorCb(err);
+          },
+        });
+      }
+
+    addIndustySymptom = (
+      id: number,
+      data: any,
+      successCb: (value: any) => void,
+      errorCb: (error: any) => void) => {
+        this.http
+        .patch(`api/controlled-substances/add?diagnosisId=${id}`,data)
+        .subscribe({
+          next(value: any) {
+            successCb(value);
+          },
+          error(err: any) {
+            errorCb(err);
+          },
+        });
+      }
   
 }

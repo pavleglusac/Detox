@@ -14,7 +14,7 @@ public class Question extends DiagnosisResponse {
     private Long diagnosisId;
     private String content;
     private String type;
-    private Boolean answered = false;
+    private String answered = "";
     private String target;
     private List<String> answers;
 
@@ -26,7 +26,7 @@ public class Question extends DiagnosisResponse {
     }
 
     @Override
-    String getType() {
+    public String getResponseType() {
         return "QUESTION";
     }
 }

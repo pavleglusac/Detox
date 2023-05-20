@@ -1,6 +1,7 @@
 package com.sbnz.detox.controller;
 
 import com.sbnz.detox.model.Diagnosis;
+import com.sbnz.detox.model.DiagnosisResponse;
 import com.sbnz.detox.service.DiagnosisService;
 import jdk.jshell.Diag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class DiagnosisController {
     }
 
     @PatchMapping("/set-symptoms")
-    public Diagnosis setSymptoms(@RequestParam("diagnosisId") Long diagnosisId, @RequestParam("symptomsType") String symptomsType) {
+    public DiagnosisResponse setSymptoms(@RequestParam("diagnosisId") Long diagnosisId, @RequestParam("symptomsType") String symptomsType) {
         return diagnosisService.setSymptomsType(diagnosisId, symptomsType);
     }
 

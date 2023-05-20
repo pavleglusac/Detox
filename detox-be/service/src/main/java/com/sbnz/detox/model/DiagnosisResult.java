@@ -25,7 +25,7 @@ public class DiagnosisResult extends DiagnosisResponse {
     }
 
     @Override
-    String getType() {
+    public String getResponseType() {
         return "RESULT";
     }
 }
