@@ -39,7 +39,8 @@ export enum DiagnosisType {
 export enum QuestionType {
     BOOL = 'bool',
     MULTIPLE = 'multiple',
-    GASNA_HROMATOGRAFIJA = 'gasna-hromatografija'
+    GASNA_HROMATOGRAFIJA = 'gasna-hromatografija',
+    SPEKTROFOTOMETRIJA = 'spektofotometrija'
 }
 
 export enum ResponseType {

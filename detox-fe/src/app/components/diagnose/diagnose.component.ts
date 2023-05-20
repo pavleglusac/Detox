@@ -1,20 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition, faUser, faX, faRepeat } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 import { Diagnosis, DiagnosisType, Question, QuestionType, ResponseType } from 'src/app/model/diagnose';
 import { DiagnoseService } from 'src/app/services/diagnose.service';
 import { DiagnosisStateService } from 'src/app/services/store/diagnosis-state.service';
+import { AnswersPipe } from 'src/app/shared/pipes/answers.pipe';
+
 
 @Component({
   selector: 'app-diagnose',
   templateUrl: './diagnose.component.html',
   styleUrls: [],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FontAwesomeModule, AnswersPipe],
 })
 export class DiagnoseComponent{
   @ViewChild('scrollMarker') private scrollMarker!: ElementRef;
+  faUserEmail: IconDefinition = faUser;
+  faEnd: IconDefinition = faX;
+  faReset: IconDefinition = faRepeat;
 
   diagnosis: Diagnosis | null = null;
   loginForm = new FormGroup({
@@ -51,7 +58,7 @@ export class DiagnoseComponent{
   }
 
   answerQuestion = (question: Question) => {
-    if (question.type !== QuestionType.GASNA_HROMATOGRAFIJA && this.questionAnswer === '') {
+    if (question.type !== QuestionType.GASNA_HROMATOGRAFIJA && question.type !== QuestionType.SPEKTROFOTOMETRIJA  && this.questionAnswer === '') {
       this.toastr.error('Morate odgovoriti na pitanje');
       return;
     }
@@ -63,7 +70,7 @@ export class DiagnoseComponent{
   }
 
   getFirstAnswer(question: Question) {
-    this.diagnosis!.type = this.questionAnswer === 'DA' ? DiagnosisType.INDUSTRY : DiagnosisType.CONTROLLED_SUBSTANCES;
+    this.diagnosis!.type = this.questionAnswer === 'Da' ? DiagnosisType.INDUSTRY : DiagnosisType.CONTROLLED_SUBSTANCES;
       this.diagnoseService.setSymptoms(this.diagnosis!.id, this.diagnosis!.type, 
         (newQuestion)=>{this.updateDiagnosis(question, newQuestion)},
         (error)=>{this.toastr.error(error.message);}
@@ -72,7 +79,7 @@ export class DiagnoseComponent{
 
   getRestOfTheAnswers(question: Question) {
     this.diagnosis?.type === DiagnosisType.INDUSTRY 
-    ? this.diagnoseService.addIndustySymptom(this.diagnosis!.id, {patch: [{op: "replace", path: question.target, "value": this.questionAnswer}]},
+    ? this.diagnoseService.addIndustySymptom(this.diagnosis!.id, [{op: "replace", path: question.target, "value": this.questionAnswer}],
       (newQuestion)=> { this.updateDiagnosis(question, newQuestion);}, 
       (error)=>{this.toastr.error(error.message);}
       ) 

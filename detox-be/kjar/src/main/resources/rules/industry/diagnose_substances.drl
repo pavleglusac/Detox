@@ -1,0 +1,185 @@
+package industry;
+import com.sbnz.detox.model.IndustrySymptoms;
+import com.sbnz.detox.model.DamageToTheRespiratoryTract;
+import com.sbnz.detox.model.Question;
+import com.sbnz.detox.model.DiagnosisResult;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+rule "Start diagnosis"
+    when
+        $symptom: IndustrySymptoms(worksWithToxicGases == null)
+    then
+        insert(new Question("Da li pacijent radi sa toksičnim gasovima?", "bool", "/worksWithToxicGases", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+
+rule "Methemoglobinemia result"
+    when
+        $symptom: IndustrySymptoms(worksWithToxicGases == true && showsMethemoglobinemia == null)
+    then
+        insert(new Question("Da li pacijent pokazuje methemoglobinemiju?", "bool", "/showsMethemoglobinemia", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Does not show methemoglobinemia"
+    when
+        $symptom: IndustrySymptoms(worksWithToxicGases == true && showsMethemoglobinemia == false && damageToTheRespiratoryTract == DamageToTheRespiratoryTract.NONE)
+    then
+        insert(new Question("Pacijent pokazuje oštećenje disajnih puteva vrste:", "multiple", "/damageToTheRespiratoryTract", new ArrayList<String>(Arrays.asList("LOWER", "UPPER"))));
+end
+
+rule "Shows damage to the lower respiratory tract"
+    when
+        $symptom: IndustrySymptoms(damageToTheRespiratoryTract == DamageToTheRespiratoryTract.LOWER && epaTest == null)
+    then
+        insert(new Question("Uraditi EPA test i uneti rezultate.", "bool", "/epaTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "EPA test positive"
+    when
+        $symptom: IndustrySymptoms(epaTest == true)
+    then
+        insert(new DiagnosisResult("VODONI-SULFID"));
+end
+
+rule "EPA test negative"
+    when
+        $symptom: IndustrySymptoms(epaTest == false && pulmonaryEdema == null)
+    then
+        insert(new Question("Da li pacijent ima plućni edem?", "bool", "/pulmonaryEdema", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Does not have pulmonary edema"
+    when
+        $symptom: IndustrySymptoms(pulmonaryEdema == false)
+    then
+        insert(new DiagnosisResult("AZBEST"));
+end
+
+rule "Have pulmonary edema"
+    when
+        $symptom: IndustrySymptoms(pulmonaryEdema == true)
+    then
+        insert(new DiagnosisResult("OZON"));
+end
+
+rule "Shows damage to the upper respiratory tract"
+    when
+        $symptom: IndustrySymptoms(damageToTheRespiratoryTract == DamageToTheRespiratoryTract.UPPER && ormTest == null)
+    then
+        insert(new Question("Uraditi Oksido-redukcioni test i uneti rezultate.", "bool", "/ormTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "ORM test negative"
+    when
+        $symptom: IndustrySymptoms(ormTest == false)
+    then
+        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>(Arrays.asList("Uradi gasnu hromatografiju"))));
+end
+
+rule "ORM test positive"
+    when
+        $symptom: IndustrySymptoms(ormTest == true && ffpTest == null)
+    then
+        insert(new Question("Uraditi fuksin-formaldehidna proba test i uneti rezultate.", "bool", "/ffpTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "FFP test positive"
+    when
+        $symptom: IndustrySymptoms(ffpTest == true)
+    then
+        insert(new DiagnosisResult("SUMPOR-DIOKSID"));
+end
+
+rule "FFP test negative"
+    when
+        $symptom: IndustrySymptoms(ffpTest == false)
+    then
+        insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>(Arrays.asList("Uradi gasnu hromatografiju"))));
+end
+
+rule "Shows methemoglobinemia"
+    when
+        $symptom: IndustrySymptoms(worksWithToxicGases == true && showsMethemoglobinemia == true && giTest == null)
+    then
+        insert(new Question("Uraditi Gray-Ilosvejev test i uneti rezultate.", "bool", "/giTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "GI test positive"
+    when
+        $symptom: IndustrySymptoms(giTest == true)
+    then
+        insert(new DiagnosisResult("AZOTOVI OKSIDI"));
+end
+
+rule "GI test negative"
+    when
+        $symptom: IndustrySymptoms(giTest == false && amilNitriteTest == null)
+    then
+        insert(new Question("Uraditi reakciju sa amil-nitritom i uneti rezultate.", "bool", "/amilNitriteTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Amil nitrite test positive"
+    when
+        $symptom: IndustrySymptoms(amilNitriteTest == true)
+    then
+        insert(new DiagnosisResult("CIJANIDI"));
+end
+
+rule "Amil nitrite test negative"
+    when
+        $symptom: IndustrySymptoms(amilNitriteTest == false)
+    then
+        insert(new Question("Spektofotometrija će pokazati.", "spektofotometrija", "", new ArrayList<String>(Arrays.asList("Uradi spektofotometriju"))));
+end
+
+rule "Does have CNS depression"
+    when
+        $symptom: IndustrySymptoms(worksWithToxicGases == false && cns == null)
+    then
+        insert(new Question("Da li pacijent ima depresiju centralnog nervnog sistema?", "bool", "/cns", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "CNS positive"
+    when
+        $symptom: IndustrySymptoms(cns == true && potassiumDichromateTest == null)
+    then
+        insert(new Question("Uraditi kalijum-dihromat test i uneti rezultate.", "bool", "/potassiumDichromateTest", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Potassium Dichromate Test positive"
+    when
+        $symptom: IndustrySymptoms(potassiumDichromateTest == true)
+    then
+        insert(new DiagnosisResult("ALKOHOLNA SUPSTANCA"));
+end
+
+rule "Potassium Dichromate Test negative"
+    when
+        $symptom: IndustrySymptoms(potassiumDichromateTest == false)
+    then
+         insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>(Arrays.asList("Uradi gasnu hromatografiju"))));
+end
+
+
+rule "CNS negative"
+    when
+        $symptom: IndustrySymptoms(cns == false && neurotoxicity == null)
+    then
+        insert(new Question("Da li pacijent ima perifernu neurotoksičnost?", "bool", "/neurotoxicity", new ArrayList<String>(Arrays.asList("true", "false"))));
+end
+
+rule "Has neurotoxicity"
+    when
+        $symptom: IndustrySymptoms(neurotoxicity == true)
+    then
+        insert(new DiagnosisResult("UGLJEN-DISULFID"));
+end
+
+rule "Does not have neurotoxicity"
+    when
+        $symptom: IndustrySymptoms(neurotoxicity == false)
+    then
+         insert(new Question("Gasna hromatografija će pokazati.", "gasna-hromatografija", "", new ArrayList<String>(Arrays.asList("Uradi gasnu hromatografiju"))));
+end

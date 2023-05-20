@@ -64,7 +64,7 @@ export class DiagnoseService {
       successCb: (value: any) => void,
       errorCb: (error: any) => void) => {
         this.http
-        .patch(`api/controlled-substances/add?diagnosisId=${id}`,data)
+        .patch(`api/industry/add?diagnosisId=${id}`,data)
         .subscribe({
           next(value: any) {
             successCb(value);

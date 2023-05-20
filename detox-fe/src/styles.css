@@ -14,6 +14,10 @@ html, body {
   @apply rounded p-3 px-7 bg-dark active:brightness-90 text-sm font-medium text-accent tracking-wide
 }
 
+.secondary-button-mini {
+  @apply rounded p-1 px-3 bg-dark active:brightness-90 text-sm font-medium text-accent tracking-wide
+}
+
 .input {
   @apply appearance-none block w-full text-white tracking-wide placeholder-medium caret-medium border-b focus:border-accent bg-transparent leading-tight outline-none py-1 duration-300
 }
