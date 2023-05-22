@@ -1,0 +1,157 @@
+template header
+  cocaineConcentration
+  cocaineTime
+  opioidConcentration
+  opioidTime
+  methamphetamineConcentration
+  methamphetamineTime
+  benzodiazepineConcentration
+  benzodiazepineTime
+  syntheticCannabinoidConcentration
+  syntheticCannabinoidTime
+
+package rules.test;
+import com.sbnz.detox.model.gas_chromatography_drugs.*;
+import com.sbnz.detox.model.DiagnosisResult;
+
+template "drugs"
+
+rule "Detect Cocaine"
+    when
+        $sumConcentration: Number() from accumulate (
+            $sample: Cocaine() over window:time(@{cocaineTime}h),
+            sum($sample.getConcentration())
+        )
+        eval($sumConcentration.doubleValue() > @{cocaineConcentration})
+    then
+        System.out.printf("Detected Cocaine: Sum of Concentration over last 1 hour = %.2f%n", $sumConcentration);
+        // insert new DiagnosisResult("Cocaine", "Cocaine detected");
+        insert(new DiagnosisResult("COCAINE"));
+end
+
+rule "Detect Opioid"
+    when
+        $avgConcentration: Number() from accumulate (
+            $sample: Opioid() over window:time(@{opioidTime}h),
+            average($sample.getConcentration())
+        )
+        eval($avgConcentration.doubleValue() > @{opioidConcentration})
+    then
+        System.out.printf("Detected Opioid: Average Concentration over last 2 hours = %.2f%n", $avgConcentration);
+        insert(new DiagnosisResult("OPIOID"));
+end
+
+rule "Detect Methamphetamine"
+    when
+        $maxConcentration: Number() from accumulate (
+            $sample: Methamphetamine() over window:time(@{methamphetamineTime}h),
+            max($sample.getConcentration())
+        )
+        eval($maxConcentration.doubleValue() > @{methamphetamineConcentration})
+    then
+        System.out.printf("Detected Methamphetamine: Maximum Concentration over last 3 hours = %.2f%n", $maxConcentration);
+        insert(new DiagnosisResult("METHAMPHETAMINE"));
+end
+
+rule "Detect Benzodiazepine"
+    whentemplate header
+cocaineConcentration
+cocaineTime
+opioidConcentration
+opioidTime
+methamphetamineConcentration
+methamphetamineTime
+benzodiazepineConcentration
+benzodiazepineTime
+syntheticCannabinoidConcentration
+syntheticCannabinoidTime
+
+package rules.controlled_substances;
+import com.sbnz.detox.model.gas_chromatography_drugs.*;
+import com.sbnz.detox.model.DiagnosisResult;
+
+
+rule "Detect Cocaine"
+    when
+        $sumConcentration: Number() from accumulate (
+            $sample: Cocaine() over window:time(@{cocaineTime}h),
+            sum($sample.getConcentration())
+        )
+        eval($sumConcentration.doubleValue() > @{cocaineConcentration})
+    then
+        System.out.printf("Detected Cocaine: Sum of Concentration over last 1 hour = %.2f%n", $sumConcentration);
+        // insert new DiagnosisResult("Cocaine", "Cocaine detected");
+        insert(new DiagnosisResult("COCAINE"));
+end
+
+rule "Detect Opioid"
+    when
+        $avgConcentration: Number() from accumulate (
+            $sample: Opioid() over window:time(@{opioidTime}h),
+            average($sample.getConcentration())
+        )
+        eval($avgConcentration.doubleValue() > @{opioidConcentration})
+    then
+        System.out.printf("Detected Opioid: Average Concentration over last 2 hours = %.2f%n", $avgConcentration);
+        insert(new DiagnosisResult("OPIOID"));
+end
+
+rule "Detect Methamphetamine"
+    when
+        $maxConcentration: Number() from accumulate (
+            $sample: Methamphetamine() over window:time(@{methamphetamineTime}h),
+            max($sample.getConcentration())
+        )
+        eval($maxConcentration.doubleValue() > @{methamphetamineConcentration})
+    then
+        System.out.printf("Detected Methamphetamine: Maximum Concentration over last 3 hours = %.2f%n", $maxConcentration);
+        insert(new DiagnosisResult("METHAMPHETAMINE"));
+end
+
+rule "Detect Benzodiazepine"
+    when
+        $minConcentration: Number() from accumulate (
+            $sample: Benzodiazepine() over window:time(@{benzodiazepineTime}h),
+            min($sample.getConcentration())
+        )
+        eval($minConcentration.doubleValue() < @{benzodiazepineConcentration})
+    then
+        System.out.printf("Detected Benzodiazepine: Minimum Concentration over last 4 hours = %.2f%n", $minConcentration);
+        insert(new DiagnosisResult("BENZODIAZEPINE"));
+end
+
+rule "Detect Synthetic Cannabinoid"
+    when
+        $countSamples: Number() from accumulate (
+            $sample: SyntheticCannabinoid(concentration > @{syntheticCannabinoidConcentration}) over window:time(@{syntheticCannabinoidTime}h),
+            count($sample)
+        )
+        eval($countSamples.intValue() > 1)
+    then
+        System.out.printf("Detected Synthetic Cannabinoid: %d samples with concentration > 50 over last 5 hours%n", $countSamples);
+        insert(new DiagnosisResult("SYNTHETIC_CANNABINOID"));
+end
+
+
+        $minConcentration: Number() from accumulate (
+            $sample: Benzodiazepine() over window:time(@{benzodiazepineTime}h),
+            min($sample.getConcentration())
+        )
+        eval($minConcentration.doubleValue() < @{benzodiazepineConcentration})
+    then
+        System.out.printf("Detected Benzodiazepine: Minimum Concentration over last 4 hours = %.2f%n", $minConcentration);
+        insert(new DiagnosisResult("BENZODIAZEPINE"));
+end
+
+rule "Detect Synthetic Cannabinoid"
+    when
+        $countSamples: Number() from accumulate (
+            $sample: SyntheticCannabinoid(concentration > @{syntheticCannabinoidConcentration}) over window:time(@{syntheticCannabinoidTime}h),
+            count($sample)
+        )
+        eval($countSamples.intValue() > 1)
+    then
+        System.out.printf("Detected Synthetic Cannabinoid: %d samples with concentration > 50 over last 5 hours%n", $countSamples);
+        insert(new DiagnosisResult("SYNTHETIC_CANNABINOID"));
+end
+
