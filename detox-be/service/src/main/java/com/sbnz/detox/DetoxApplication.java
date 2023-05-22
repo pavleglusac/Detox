@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.security.Security;
+import java.util.List;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -49,19 +50,44 @@ public class DetoxApplication {
 
 
 	@Bean
-	public DrugsParams drugsParams() {
-		DrugsParams drugsParams = new DrugsParams();
-		drugsParams.setCocaineConcentration(80.0);
-		drugsParams.setCocaineTime(1);
-		drugsParams.setOpioidConcentration(60.0);
-		drugsParams.setOpioidTime(2);
-		drugsParams.setMethamphetamineConcentration(100.0);
-		drugsParams.setMethamphetamineTime(3);
-		drugsParams.setBenzodiazepineConcentration(30.0);
-		drugsParams.setBenzodiazepineTime(4);
-		drugsParams.setSyntheticCannabinoidConcentration(50.0);
-		drugsParams.setSyntheticCannabinoidTime(0);
-		return drugsParams;
+	public List<DrugsParams> drugsParams() {
+		DrugsParams drugsParams1 = new DrugsParams();
+		drugsParams1.setParamsName("HIGH");
+		drugsParams1.setCocaineConcentrationMin(80.0);
+		drugsParams1.setCocaineConcentrationMax(200.0);
+		drugsParams1.setCocaineTime(1);
+		drugsParams1.setOpioidConcentrationMin(60.0);
+		drugsParams1.setOpioidConcentrationMin(200.0);
+		drugsParams1.setOpioidTime(2);
+		drugsParams1.setMethamphetamineConcentrationMin(100.0);
+		drugsParams1.setMethamphetamineConcentrationMin(300.0);
+		drugsParams1.setMethamphetamineTime(3);
+		drugsParams1.setBenzodiazepineConcentrationMin(30.0);
+		drugsParams1.setBenzodiazepineConcentrationMax(150.0);
+		drugsParams1.setBenzodiazepineTime(4);
+		drugsParams1.setSyntheticCannabinoidConcentrationMin(50.0);
+		drugsParams1.setSyntheticCannabinoidConcentrationMax(250.0);
+		drugsParams1.setSyntheticCannabinoidTime(0);
+
+		DrugsParams drugsParams2 = new DrugsParams();
+		drugsParams2.setParamsName("LOW");
+		drugsParams2.setCocaineConcentrationMin(40.0);
+		drugsParams2.setCocaineConcentrationMax(80.0);
+		drugsParams2.setCocaineTime(1);
+		drugsParams2.setOpioidConcentrationMin(30.0);
+		drugsParams2.setOpioidConcentrationMin(60.0);
+		drugsParams2.setOpioidTime(2);
+		drugsParams2.setMethamphetamineConcentrationMin(50.0);
+		drugsParams2.setMethamphetamineConcentrationMin(100.0);
+		drugsParams2.setMethamphetamineTime(3);
+		drugsParams2.setBenzodiazepineConcentrationMin(20.0);
+		drugsParams2.setBenzodiazepineConcentrationMax(30.0);
+		drugsParams2.setBenzodiazepineTime(4);
+		drugsParams2.setSyntheticCannabinoidConcentrationMin(30.0);
+		drugsParams2.setSyntheticCannabinoidConcentrationMax(50.0);
+		drugsParams2.setSyntheticCannabinoidTime(0);
+
+		return List.of(drugsParams1, drugsParams2);
 	}
 
 }

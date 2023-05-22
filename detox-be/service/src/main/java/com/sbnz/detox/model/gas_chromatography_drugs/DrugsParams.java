@@ -11,14 +11,20 @@ import org.springframework.context.annotation.Bean;
 @NoArgsConstructor
 public class DrugsParams {
 
-    private Double cocaineConcentration;
+    private String paramsName;
+    private Double cocaineConcentrationMin;
+    private Double cocaineConcentrationMax;
     private Integer cocaineTime;
-    private Double opioidConcentration;
+    private Double opioidConcentrationMin;
+    private Double opioidConcentrationMax;
     private Integer opioidTime;
-    private Double methamphetamineConcentration;
+    private Double methamphetamineConcentrationMin;
+    private Double methamphetamineConcentrationMax;
     private Integer methamphetamineTime;
-    private Double benzodiazepineConcentration;
+    private Double benzodiazepineConcentrationMin;
+    private Double benzodiazepineConcentrationMax;
     private Integer benzodiazepineTime;
-    private Double syntheticCannabinoidConcentration;
+    private Double syntheticCannabinoidConcentrationMin;
+    private Double syntheticCannabinoidConcentrationMax;
     private Integer syntheticCannabinoidTime;
 }

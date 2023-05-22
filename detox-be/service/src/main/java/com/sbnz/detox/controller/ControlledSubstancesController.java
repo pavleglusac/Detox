@@ -31,4 +31,7 @@ public class ControlledSubstancesController {
     public DiagnosisResult runGasChromatography() throws IllegalAccessException, InstantiationException, FileNotFoundException {
     	return gasChromatographyDrugsService.runGasChromatography();
     }
+
+
+
 }

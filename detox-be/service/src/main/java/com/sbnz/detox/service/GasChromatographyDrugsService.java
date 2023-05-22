@@ -35,7 +35,7 @@ public class GasChromatographyDrugsService {
     private KieContainer kieContainer;
 
     @Autowired
-    private DrugsParams drugsParams;
+    private List<DrugsParams> drugsParams;
 
 
 
@@ -79,14 +79,40 @@ public class GasChromatographyDrugsService {
     );
 
     public DiagnosisResult runGasChromatography() throws IllegalAccessException, InstantiationException, FileNotFoundException {
+        KieSession kieSession = getSessionFromTemplate();
+        while (true) {
+            for (DrugGenerator generator : generators) {
+                if (generator.skip()) {
+                    continue;
+                }
+                DrugSample drugSample = generator.generateDrug();
+                kieSession.insert(drugSample);
+            }
+            kieSession.fireAllRules();
+            Collection<DiagnosisResult> diagnosisResultList = (Collection<DiagnosisResult>) kieSession.getObjects(new ClassObjectFilter(DiagnosisResult.class));
+            if (!diagnosisResultList.isEmpty()) {
+                DiagnosisResult diagnosisResult = new DiagnosisResult();
+                diagnosisResult.setContent(concatenateDiagnosisResults(diagnosisResultList));
+                return diagnosisResult;
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private KieSession getSessionFromTemplate() throws FileNotFoundException {
         File file = new File("./kjar/src/main/resources/rules/controlled_substances/gas_chromatography_substances.drt");
 
         InputStream template = new FileInputStream(file);
-        List<DrugsParams> tmpList = new ArrayList<>();
-        tmpList.add(drugsParams);
+        List<DrugsParams> tmpList = drugsParams;
 
         ObjectDataCompiler converter = new ObjectDataCompiler();
         String drl = converter.compile(tmpList, template);
+        System.out.println(drl);
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kfs = kieServices.newKieFileSystem();
         kfs.write("src/main/resources/rules.drl", kieServices.getResources().newReaderResource(new StringReader(drl)));
@@ -102,33 +128,16 @@ public class GasChromatographyDrugsService {
         kieBaseConf.setOption(EventProcessingOption.STREAM);
         KieBase kieBase = kieContainer.newKieBase(kieBaseConf);
         KieSession kieSession = kieBase.newKieSession();
-
-        while(true) {
-            for (DrugGenerator generator : generators) {
-                if (generator.skip()) {
-                    continue;
-                }
-                DrugSample drugSample = generator.generateDrug();
-                kieSession.insert(drugSample);
-            }
-            kieSession.fireAllRules();
-            Collection<DiagnosisResult> diagnosisResultList = (Collection<DiagnosisResult>) kieSession.getObjects(new ClassObjectFilter(DiagnosisResult.class));
-            if (!diagnosisResultList.isEmpty()) {
-                DiagnosisResult diagnosisResult = diagnosisResultList.iterator().next();
-                System.out.println("Diagnosis result: " + diagnosisResult);
-                kieSession.dispose();
-                return diagnosisResult;
-            }
-            // sleep for 0.5 seconds
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        return kieSession;
     }
 
-
+    private String concatenateDiagnosisResults(Collection<DiagnosisResult> diagnosisResults) {
+        StringBuilder sb = new StringBuilder();
+        for (DiagnosisResult diagnosisResult : diagnosisResults) {
+            sb.append(diagnosisResult.getContent());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
 }
