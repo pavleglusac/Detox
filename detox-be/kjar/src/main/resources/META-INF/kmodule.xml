@@ -1,7 +1,11 @@
 <kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jboss.org/kie/6.0.0/kmodule">
-    <kbase name="kbase" packages="controlled_substances">
+    <kbase name="kbase" eventProcessingMode="stream" packages="controlled_substances" >
         <ksession name="ksession" clockType="pseudo"/>
     </kbase>
+    <kbase name="kbase2" eventProcessingMode="stream" packages="rules" >
+        <ksession name="ksession2" clockType="pseudo"/>
+    </kbase>
+
     <kbase name="kbase-industry" packages="industry">
         <ksession name="ksession-industry" clockType="pseudo"/>
     </kbase>

@@ -19,4 +19,11 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, Long> {
     Optional<Diagnosis> findDiagnosisInProgress(Patient patient);
 
     List<Diagnosis> findAllByPatient(Patient patient);
+
+    Optional<Diagnosis> findTopByPatientOrderByStartedAtDesc(Patient patient);
+
+
+    // get the last diagnosis for every patient, only one diagnosis per patient
+    @Query("SELECT MAX(d.startedAt) FROM Diagnosis d GROUP BY d.patient.id")
+    List<Diagnosis> findLastDiagnosisForPatients();
 }

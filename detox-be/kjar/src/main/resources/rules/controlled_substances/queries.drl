@@ -1,0 +1,43 @@
+package rules.controlled_substances;
+import com.sbnz.detox.model.queries.*;
+import java.util.List;
+dialect  "mvel"
+
+query "korisnikKokainaHelper" (String podvrstaParam, String vrstaParam)
+    QueryModel(podvrsta == podvrstaParam, vrsta == vrstaParam)
+    or (QueryModel(podvrsta == podvrstaParam, z: vrsta) and korisnikKokainaHelper(z, vrstaParam;))
+end
+
+
+query "korisnikKokaina" (String podvrstaParam, String vrstaParam, String vrednostParam)
+    QueryModel(podvrstaParam, vrstaParam, vrednostParam;)
+    or (QueryModel(p: podvrsta, vrsta == podvrstaParam, vrednost == vrednostParam) and korisnikKokainaHelper(podvrstaParam, p;))
+end
+
+
+
+//query "furtherTests" (String vrstaParam)
+//    QueryModel(z: podvrsta, vrsta == vrstaParam) or furtherTests(z;)
+//end
+
+
+rule "KokainRule"
+no-loop true
+when
+    $question: Query( $polje: polje, $vrednost: vrednost, $target: target)
+    (
+        $q: QueryModel(podvrsta == $target, vrsta == $polje, vrednost == $vrednost )
+        or
+        ( $t: QueryModel(p: podvrsta, vrsta == $polje, vrednost == $vrednost) and korisnikKokainaHelper($target, p;) )
+    )
+
+then
+    // Action when the kokaina query is satisfied.
+    System.out.println("Korisnik je moguci korisnik kokaina");
+    // set the result of the query
+    modify($question) {
+        setResult(true);
+    }
+end
+
+
