@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import * as jspreadsheet from "jspreadsheet-ce";
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx'
 
 
 @Component({
@@ -18,6 +18,7 @@ export class SettingsComponent {
   
   @ViewChild("spreadsheet") spreadsheet!: ElementRef;
   title = "CodeSandbox";
+  selected:number = 1;
  
   data = [
 
@@ -53,6 +54,10 @@ export class SettingsComponent {
     
 
     this.loadData();
+  }
+
+  changeSelect(num: number) {
+    this.selected = num;
   }
 
   setUpJsSpreadsheet() {

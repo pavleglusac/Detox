@@ -74,5 +74,21 @@ export class DiagnoseService {
           },
         });
       }
+
+      startGasChromatography = (
+        api: string,
+        successCb: (value: any) => void,
+        errorCb: (error: any) => void) => {
+          this.http
+          .get(`api/${api}/run-gas-chromatography`,)
+          .subscribe({
+            next(value: any) {
+              successCb(value);
+            },
+            error(err: any) {
+              errorCb(err.error);
+            },
+          });
+        }
   
 }

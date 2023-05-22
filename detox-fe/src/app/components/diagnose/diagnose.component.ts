@@ -18,7 +18,7 @@ import { AnswersPipe } from 'src/app/shared/pipes/answers.pipe';
   imports: [CommonModule, ReactiveFormsModule, FormsModule, FontAwesomeModule, AnswersPipe],
 })
 export class DiagnoseComponent{
-  @ViewChild('scrollMarker') private scrollMarker!: ElementRef;
+  @ViewChild('scrollMarker') private scrollMarker?: ElementRef;
   faUserEmail: IconDefinition = faUser;
   faEnd: IconDefinition = faX;
   faReset: IconDefinition = faRepeat;
@@ -89,13 +89,22 @@ export class DiagnoseComponent{
       );
   }
 
+  startTest = (question: Question) => {
+    let api = this.diagnosis?.type === DiagnosisType.INDUSTRY ? 'industry' : 'controlled-substances';
+    this.diagnoseService.startGasChromatography(
+      api,
+      (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
+      (error: any)=>{this.toastr.error(error.message);}
+      )
+  }
+
   updateDiagnosis(question: Question, newQuestion: Question): void {
     question.answered = this.questionAnswer;
     this.diagnosis!.updateQuestion(question);
     this.diagnosis!.questions.push(newQuestion);
     this.diagnosisStateService.setDiagnosisState(this.diagnosis!);
     this.questionAnswer = '';
-    this.scrollMarker.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.scrollMarker!.nativeElement.scrollIntoView({ behavior: 'smooth' });
     if (newQuestion.responseType === ResponseType.RESULT || !newQuestion.answers) {
       this.toastr.success(newQuestion.content, 'Rezultat');
     }
