@@ -26,10 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 class AdminApplicationTests {
 
@@ -101,6 +98,7 @@ class AdminApplicationTests {
 		// keep only the minimum subset for every rule fired (if there are more than one)
 		System.out.println("ODAVDE DOLE ............................................");
 		List<String> furtherTests = new ArrayList<>();
+		HashSet<String> tempList = new HashSet<>();
 		for (java.lang.reflect.Field field : controlledSubstancesSymptoms.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			Object value = field.get(controlledSubstancesSymptoms);
@@ -118,8 +116,14 @@ class AdminApplicationTests {
 				for (QueryResultsRow rowSub : resultsSub) {
 					String vrednost = (String) rowSub.get("podvrstaParam");
 					System.out.println("Result: " + vrednost);
-					furtherTests.add(vrednost);
+					tempList.add(vrednost);
 				}
+				// keep the shorter list
+				if(furtherTests.isEmpty() || furtherTests.size() > tempList.size()) {
+					furtherTests.clear();
+					furtherTests.addAll(tempList);
+				}
+				tempList.clear();
 //				furtherTests.add(v.getValue());
 			}
 		}

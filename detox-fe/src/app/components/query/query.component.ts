@@ -45,6 +45,8 @@ export class QueryComponent {
       option.showErrMsg = true;
       return;
     } else option.showErrMsg = false;
+    
+    option.result = null;
 
     this.queryService.search(
       option.apiPath,

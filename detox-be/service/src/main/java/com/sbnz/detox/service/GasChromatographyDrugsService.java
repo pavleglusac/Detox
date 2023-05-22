@@ -3,6 +3,7 @@ package com.sbnz.detox.service;
 import com.sbnz.detox.DetoxApplication;
 import com.sbnz.detox.model.DiagnosisResult;
 import com.sbnz.detox.model.gas_chromatography_drugs.*;
+import org.drools.decisiontable.ExternalSpreadsheetCompiler;
 import org.drools.template.ObjectDataCompiler;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -106,12 +107,11 @@ public class GasChromatographyDrugsService {
 
     private KieSession getSessionFromTemplate() throws FileNotFoundException {
         File file = new File("./kjar/src/main/resources/rules/controlled_substances/gas_chromatography_substances.drt");
-
+        File dataFile = new File("./kjar/src/main/resources/substancesTemplate.xlsx");
         InputStream template = new FileInputStream(file);
-        List<DrugsParams> tmpList = drugsParams;
-
-        ObjectDataCompiler converter = new ObjectDataCompiler();
-        String drl = converter.compile(tmpList, template);
+        InputStream data = new FileInputStream(dataFile);
+        ExternalSpreadsheetCompiler converter = new ExternalSpreadsheetCompiler();
+        String drl = converter.compile(data, template, 2, 1);
         System.out.println(drl);
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kfs = kieServices.newKieFileSystem();

@@ -64,6 +64,7 @@ public class QueriesService {
         // drools rule will return List<String> of further tests
         // keep only the minimum subset for every rule fired (if there are more than one)
         List<String> furtherTests = new ArrayList<>();
+        HashSet<String> tempTests = new HashSet<>();
         Field[] fields ;
         if (controlledSubstances) {
             fields = ((ControlledSubstancesSymptoms) symptoms).getClass().getDeclaredFields();
@@ -81,8 +82,13 @@ public class QueriesService {
                 QueryResults resultsSub = kieSession.getQueryResults("korisnikKokainaHelper", new Object[]{ Variable.v, podvrsta });
                 for (QueryResultsRow rowSub : resultsSub) {
                     String vrednost = (String) rowSub.get("podvrstaParam");
-                    furtherTests.add(vrednost);
+                    tempTests.add(vrednost);
                 }
+                if (tempTests.size() < furtherTests.size() || furtherTests.isEmpty()) {
+                    furtherTests.clear();
+                    furtherTests.addAll(tempTests);
+                }
+                tempTests.clear();
             }
         }
         return furtherTests;

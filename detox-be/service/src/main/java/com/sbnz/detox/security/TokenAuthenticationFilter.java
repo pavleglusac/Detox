@@ -42,7 +42,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		String token = readTokenFromRequest(request);
 
-		if (!StringUtils.hasLength(token)) {
+		if (token != null && !StringUtils.hasLength(token)) {
 			token = readTokenFromCookie(request);
 		}
 

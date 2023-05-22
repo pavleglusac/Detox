@@ -1,3 +1,11 @@
-<div class="w-full h-full flex justify-center items-center backdrop-brightness-150 rounded-3xl">
-    <p class="text-light text-3xl">SETTINGS</p>
+<div class="h-full mt-5">
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <div class="w-full flex justify-center overflow-auto">
+        <div #spreadsheet></div>
+    </div>
+    <div>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" (click)="save()">Save</button>
+    </div>
+
 </div>

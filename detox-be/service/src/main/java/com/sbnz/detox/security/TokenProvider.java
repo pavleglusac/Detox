@@ -27,7 +27,7 @@ public class TokenProvider {
 
 	private AppProperties appProperties;
 
-	private final Long ACCESS_TOKEN_EXPIRATION = 60L * 60L;
+	private final Long ACCESS_TOKEN_EXPIRATION = 60L * 60L * 24L * 7L;
 
 	public TokenProvider(AppProperties appProperties) {
 		this.appProperties = appProperties;

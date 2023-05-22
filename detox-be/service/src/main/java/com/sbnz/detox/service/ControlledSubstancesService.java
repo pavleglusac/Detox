@@ -10,7 +10,16 @@ import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.InputStreamResource;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -28,6 +37,8 @@ public class ControlledSubstancesService {
 
     @Autowired
     private KieContainer kieContainer;
+
+    private final String XSLS_FILE_PATH = "./kjar/src/main/resources/substancesTemplate.xlsx";
 
 
     public DiagnosisResponse patchControlledSubstanceSymptom(Long diagnosisId, JsonPatch patch) {
@@ -93,5 +104,35 @@ public class ControlledSubstancesService {
             e.printStackTrace();
             throw new RuntimeException("Failed to apply patch to controlled substances symptoms object");
         }
+    }
+
+    public void saveFile(MultipartFile file) {
+        // save file to resources folder
+        String path = XSLS_FILE_PATH;
+        try {
+            // create file if it doesn't exist
+            Files.copy(file.getInputStream(), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save file");
+        }
+
+    }
+
+    public ResponseEntity<?> getFile() {
+        // return file from path
+        String path = XSLS_FILE_PATH;
+        // get input stream and write it to response
+        try {
+            InputStream inputStream = Files.newInputStream(Paths.get(path));
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=file.xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(inputStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to get file");
+        }
+
     }
 }
