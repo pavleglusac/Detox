@@ -10,6 +10,10 @@ html, body {
   @apply rounded p-3 px-7 bg-accent active:bg-accent-dark text-white font-medium tracking-wide
 }
 
+.main-button-mini {
+  @apply rounded p-2 px-4 bg-accent active:bg-accent-dark text-white font-medium tracking-wide
+}
+
 .secondary-button {
   @apply rounded p-3 px-7 bg-dark active:brightness-90 text-sm font-medium text-accent tracking-wide
 }
