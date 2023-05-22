@@ -1,19 +1,25 @@
 package rules.controlled_substances;
 import com.sbnz.detox.model.queries.*;
+import java.util.List;
 dialect  "mvel"
 
 query "korisnikKokainaHelper" (String podvrstaParam, String vrstaParam)
     QueryModel(podvrsta == podvrstaParam, vrsta == vrstaParam)
     or (QueryModel(podvrsta == podvrstaParam, z: vrsta) and korisnikKokainaHelper(z, vrstaParam;))
-    // telefon po
 end
 
 
 query "korisnikKokaina" (String podvrstaParam, String vrstaParam, String vrednostParam)
     QueryModel(podvrstaParam, vrstaParam, vrednostParam;)
     or (QueryModel(p: podvrsta, vrsta == podvrstaParam, vrednost == vrednostParam) and korisnikKokainaHelper(podvrstaParam, p;))
-    // telefon po
 end
+
+
+
+//query "furtherTests" (String vrstaParam)
+//    QueryModel(z: podvrsta, vrsta == vrstaParam) or furtherTests(z;)
+//end
+
 
 rule "KokainRule"
 no-loop true
@@ -33,4 +39,5 @@ then
         setResult(true);
     }
 end
+
 

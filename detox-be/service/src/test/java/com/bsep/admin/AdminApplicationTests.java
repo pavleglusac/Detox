@@ -8,11 +8,16 @@ import com.sbnz.detox.model.gas_chromatography_drugs.DrugsParams;
 import com.sbnz.detox.model.queries.Query;
 import com.sbnz.detox.model.queries.QueryModel;
 import com.sbnz.detox.service.GasChromatographyDrugsService;
+import org.drools.core.QueryResultsRowImpl;
 import org.drools.template.ObjectDataCompiler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
+import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
+import org.kie.api.runtime.rule.Variable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +28,7 @@ import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 class AdminApplicationTests {
@@ -72,6 +78,52 @@ class AdminApplicationTests {
 		assert !testForPresence("Kokain", controlledSubstancesSymptoms, kieSession);
 		assert !testForPresence("Amfetamini", controlledSubstancesSymptoms, kieSession);
 
+	}
+
+
+	@Test
+	public void testFurtherTests() throws IllegalAccessException {
+		KieServices ks = KieServices.Factory.get();
+		KieContainer kieContainer = ks.newKieContainer(ks.newReleaseId("com.sbnz", "kjar", "0.0.1-SNAPSHOT"));
+		KieSession kieSession = kieContainer.newKieSession("ksession");
+		model.forEach(kieSession::insert);
+
+		ControlledSubstancesSymptoms controlledSubstancesSymptoms = new ControlledSubstancesSymptoms();
+		controlledSubstancesSymptoms.setAffectsCNS(false);
+		controlledSubstancesSymptoms.setUrineTest(UrineTestResult.PRESENCE_BENZOILECGONINE);
+
+		furtherTests("Kokain", controlledSubstancesSymptoms, kieSession).forEach(System.out::println);
+	}
+
+
+	public List<String> furtherTests(String testSubstance, ControlledSubstancesSymptoms controlledSubstancesSymptoms, KieSession kieSession) throws IllegalAccessException {
+		// drools rule will return List<String> of further tests
+		// keep only the minimum subset for every rule fired (if there are more than one)
+		System.out.println("ODAVDE DOLE ............................................");
+		List<String> furtherTests = new ArrayList<>();
+		for (java.lang.reflect.Field field : controlledSubstancesSymptoms.getClass().getDeclaredFields()) {
+			field.setAccessible(true);
+			Object value = field.get(controlledSubstancesSymptoms);
+			if(value == null || value.toString().equals("NOT_TESTED")) continue;
+			System.out.println("Query za " + field.getName() + " je " + value.toString());
+//			String query = field.getName();
+//			kieSession.insert(query);
+			QueryResults results = kieSession.getQueryResults("korisnikKokaina", new Object[]{ Variable.v, field.getName(), value.toString() });
+			// get all results
+			for (QueryResultsRow row : results) {
+				// get the result
+				String podvrsta = (String) row.get("podvrstaParam");
+				QueryResults resultsSub = kieSession.getQueryResults("korisnikKokainaHelper", new Object[]{ Variable.v, podvrsta });
+				System.out.println("Result podvrsta (vrednost ukljucena): " + podvrsta);
+				for (QueryResultsRow rowSub : resultsSub) {
+					String vrednost = (String) rowSub.get("podvrstaParam");
+					System.out.println("Result: " + vrednost);
+					furtherTests.add(vrednost);
+				}
+//				furtherTests.add(v.getValue());
+			}
+		}
+		return furtherTests;
 	}
 
 
