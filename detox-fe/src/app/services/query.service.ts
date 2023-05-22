@@ -9,11 +9,13 @@ export class QueryService {
   constructor(private http: HttpClient) { }
 
   search = (
-    input: string,  
-    successCb: (value: any) => void,
-    errorCb: (error: any) => void) => {
+      api: string,
+      input: string,  
+      successCb: (value: any) => void,
+      errorCb: (error: any) => void,
+      ) => {
       this.http
-      .post(`api/diagnosis/start?`,{})
+      .get(`api/queries/${api}${input}`)
       .subscribe({
         next(value: any) {
           successCb(value);

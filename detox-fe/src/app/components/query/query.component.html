@@ -4,11 +4,16 @@
 
         <div *ngFor="let option of options" class="flex flex-col justify-center w-full border-b border-accent-dark py-5 rounded-md hover:bg-dark">
             <div class="flex gap-between text-xl justify-between items-center w-full">
-                <h2 class="flex gap-7 items-end">
-                    <p class=" w-full pl-3 font-medium text-left text-light cursor-default">
+                <h2 class="flex gap-7 items-end justify-start w-[90%]">
+                    <p class=" w-fit pl-3 font-medium text-left text-light cursor-default">
                         {{option.query}}
                     </p>
-                    <input *ngIf="option.queryInput !== null" class="input text-base h-fit max-w-[8rem]" [(ngModel)] = "option.queryInput"/>
+                    <div *ngIf="option.queryInput !== null" class="relative">
+                        <input class="input text-base h-fit max-w-[27rem]" [(ngModel)] = "option.queryInput" placeholder="Parametar pretrage"/>
+                        <p *ngIf="option.showErrMsg" class="text-yellow-400 text-xs italic absolute -bottom-[18px]">
+                            Parametar pretrage je obavezan.
+                        </p>
+                    </div>
                 </h2>
                 <div class="flex gap-10 pr-3">
                     <button class="main-button-mini" (click)="search(option)">
