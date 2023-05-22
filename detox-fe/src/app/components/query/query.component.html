@@ -1,3 +1,36 @@
-<div class="w-full h-full flex justify-center items-center backdrop-brightness-150 rounded-3xl">
-    <p class="text-light text-3xl">QUERIES</p>
+<div class="w-full h-full flex justify-center items-start pt-28 backdrop-brightness-150 rounded-3xl">
+        
+    <div class="flex flex-col items-start justify-between overflow-auto max-h-[30rem] max-w-5xl min-w-[64rem]">
+
+        <div *ngFor="let option of options" class="flex flex-col justify-center w-full border-b border-accent-dark py-5 rounded-md hover:bg-dark">
+            <div class="flex gap-between text-xl justify-between items-center w-full">
+                <h2 class="flex gap-7 items-end justify-start w-[90%]">
+                    <p class=" w-fit pl-3 font-medium text-left text-light cursor-default">
+                        {{option.query}}
+                    </p>
+                    <div *ngIf="option.queryInput !== null" class="relative">
+                        <input class="input text-base h-fit max-w-[27rem]" [(ngModel)] = "option.queryInput" placeholder="Parametar pretrage"/>
+                        <p *ngIf="option.showErrMsg" class="text-yellow-400 text-xs italic absolute -bottom-[18px]">
+                            Parametar pretrage je obavezan.
+                        </p>
+                    </div>
+                </h2>
+                <div class="flex gap-10 pr-3">
+                    <button class="main-button-mini" (click)="search(option)">
+                        <fa-icon [icon]="faView" class="text-base"></fa-icon>
+                    </button>
+                    <fa-icon *ngIf="option.result && !option.show" [icon]="faShowResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer"></fa-icon>
+                    <fa-icon *ngIf="option.result && option.show" [icon]="faHideResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer"></fa-icon>
+                </div>
+            </div>
+            <div [ngClass]="option.show ? 'block' : 'hidden'" class="duration-300 ease-in-out">
+                <ul class="flex flex-col gap-3 text-medium text-lg pl-5">
+                    <li *ngFor="let result of option.result">- {{result}}</li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+  
 </div>
