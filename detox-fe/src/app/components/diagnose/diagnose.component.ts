@@ -31,6 +31,8 @@ export class DiagnoseComponent{
     ])})
   questionAnswer: string = '';
 
+  showTestButton = true;
+
   constructor(private diagnoseService: DiagnoseService, private toastr: ToastrService, private diagnosisStateService: DiagnosisStateService) { 
     diagnosisStateService.getDiagnosisState().subscribe((diagnosis: Diagnosis | null) => {
       this.diagnosis = diagnosis;
@@ -106,12 +108,14 @@ export class DiagnoseComponent{
     this.questionAnswer = '';
     this.scrollMarker!.nativeElement.scrollIntoView({ behavior: 'smooth' });
     if (newQuestion.responseType === ResponseType.RESULT || !newQuestion.answers) {
+      this.showTestButton = false;
       this.toastr.success(newQuestion.content, 'Rezultat');
     }
   }
 
   startAgain = () => {
     this.questionAnswer = '';
+    this.showTestButton = true;
     this.diagnosis = null;
     this.loginForm.reset();
     this.diagnosisStateService.clearDiagnosisState();

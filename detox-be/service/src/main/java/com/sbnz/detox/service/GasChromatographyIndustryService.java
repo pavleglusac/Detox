@@ -65,7 +65,7 @@ public class GasChromatographyIndustryService {
             new GasChromatographyIndustryService.IndustryToxicGenerator<>(VinylChloride.class, 0, 50, 0.1),
             new GasChromatographyIndustryService.IndustryToxicGenerator<>(Formaldehyde.class, 0, 80, 0.4),
             new GasChromatographyIndustryService.IndustryToxicGenerator<>(PCB.class, 0, 120, 0.4),
-            new GasChromatographyIndustryService.IndustryToxicGenerator<>(Toluene.class, 0, 120, 0.4),
+            new GasChromatographyIndustryService.IndustryToxicGenerator<>(Toluene.class, 20, 120, 0.1),
             new GasChromatographyIndustryService.IndustryToxicGenerator<>(Benzene.class, 0, 100, 0.0)
     );
 

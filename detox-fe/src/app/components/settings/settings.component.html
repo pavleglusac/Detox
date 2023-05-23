@@ -1,7 +1,5 @@
 <div class="w-full h-full flex flex-col gap-5 justify-start p-10 pt-20 items-end backdrop-brightness-150 rounded-3xl">
     
-    
-    
     <ul class="flex text-sm w-full font-medium text-center text-medium divide-x divide-accent-dark rounded-lg shadow cursor-pointer mb-8">
         <li class="w-full h-full" (click)="changeSelect(1)">
             <p class="w-full bg-dark rounded-l-lg hover:text-accent" [ngClass]="selected === 1 ? 'text-accent text-xl p-3' : 'text-medium p-4'">Gasna hromatografija - supstance</p>
@@ -14,21 +12,8 @@
         </li>
     </ul>
 
-
-
-
-    
-
-    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
-    <p class="text-light text-2xl self-start">Parametari gasne hromatografije kod kontrolisanih supstanci:</p>
-    <div class="w-full flex justify-start overflow-auto rounded">
-        <div #spreadsheet></div>
+    <div class="px-10" style="width:inherit;">
+        <app-template [columns]="columns" [api]="api" [text]="title"></app-template>
     </div>
-
-  
-
-    <button class="main-button" (click)="save()">Save</button>
     
-
 </div>

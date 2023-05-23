@@ -7,11 +7,19 @@ import com.sbnz.detox.model.*;
 import com.sbnz.detox.repository.DiagnosisRepository;
 import com.sbnz.detox.repository.IndustrySymptomsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -29,6 +37,8 @@ public class IndustryService {
 
     @Autowired
     private KieContainer kieContainer;
+
+    private final String XSLS_GC_FILE_PATH = "./kjar/src/main/resources/industryGasTemplate.xlsx";
 
     public DiagnosisResponse patchIndustrySymptom(Long diagnosisId, JsonPatch patch) {
         Diagnosis diagnosis = diagnosisRepository
@@ -93,5 +103,35 @@ public class IndustryService {
             e.printStackTrace();
             throw new RuntimeException("Failed to apply patch to industry substances symptoms object");
         }
+    }
+
+    public void saveFileGC(MultipartFile file) {
+        // save file to resources folder
+        String path = XSLS_GC_FILE_PATH;
+        try {
+            // create file if it doesn't exist
+            Files.copy(file.getInputStream(), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save file");
+        }
+
+    }
+
+    public ResponseEntity<?> getFileGC() {
+        // return file from path
+        String path = XSLS_GC_FILE_PATH;
+        // get input stream and write it to response
+        try {
+            InputStream inputStream = Files.newInputStream(Paths.get(path));
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=file.xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(inputStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to get file");
+        }
+
     }
 }

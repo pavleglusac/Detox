@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import * as jspreadsheet from "jspreadsheet-ce";
-import * as XLSX from 'xlsx'
+import { TemplateComponent } from './template/template.component';
 
 
 @Component({
@@ -11,20 +9,13 @@ import * as XLSX from 'xlsx'
   templateUrl: './settings.component.html',
   styleUrls: [],
   standalone: true,
-  imports: [CommonModule, NgxDatatableModule]
+  imports: [CommonModule, NgxDatatableModule, TemplateComponent]
 })
 export class SettingsComponent {
 
-  
-  @ViewChild("spreadsheet") spreadsheet!: ElementRef;
-  title = "CodeSandbox";
   selected:number = 1;
- 
-  data = [
 
-  ];
-
-  columns = [
+  columnsGcSubstances = [
     { title: 'Naziv', width: 100 },
     { title: 'Min Kokain', width: 100 },
     { title: 'Max Kokain', width: 100 },
@@ -41,77 +32,57 @@ export class SettingsComponent {
     { title: 'Min Syn. Can.', width: 100 },
     { title: 'Max Syn. Can.', width: 100 },
     { title: 'Time Syn. Can.', width: 100 },
-
 ]
 
-  constructor(private http: HttpClient) { }
+columnsGcIndustry = [
+  { title: 'Naziv', width: 100 },
+  { title: 'Min Benzen', width: 100 },
+  { title: 'Max Benzen', width: 100 },
+  { title: 'Vreme Benzen', width: 100 },
+  { title: 'Min Toluen', width: 100 },
+  { title: 'Max Toluen', width: 100 },
+  { title: 'Time Toluen', width: 100 },
+  { title: 'Min Formaldehid', width: 100 },
+  { title: 'Max Formaldehid', width: 100 },
+  { title: 'Time Formaldehid', width: 100 },
+  { title: 'Min Polihlorovani bifenili', width: 100 },
+  { title: 'Max Polihlorovani bifenili  ', width: 100 },
+  { title: 'Time Polihlorovani bifenili  ', width: 100 },
+  { title: 'Min Vinil hlorid', width: 100 },
+  { title: 'Max Vinil hlorid', width: 100 },
+  { title: 'Time Vinil hlorid', width: 100 },
+]
 
-  ngOnInit(): void {
-    
-  }
-
-  ngAfterViewInit() {
-    
-
-    this.loadData();
-  }
 
   changeSelect(num: number) {
     this.selected = num;
   }
 
-  setUpJsSpreadsheet() {
-    jspreadsheet(this.spreadsheet.nativeElement, {
-      data: this.data,
-        columns: this.columns,
-      minDimensions: [10, 10]
-    });
+  get columns() {
+    if (this.selected === 1 ) {
+      return this.columnsGcSubstances;
+    } else if (this.selected === 2) {
+      return this.columnsGcIndustry;
+    }
+    return this.columnsGcIndustry;
   }
 
-
-  save() {
-    let columnTitles = this.columns.map((column) => column.title);
-    let data = [columnTitles, ...this.data];
-    console.log(data);
-    let worksheet = XLSX.utils.aoa_to_sheet(data);
-    let workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    let wopts = { bookType: 'xlsx', bookSST: false, type: "array" } as XLSX.WritingOptions;
-    let wbout = XLSX.write(workbook, wopts);
-
-    let blob = new Blob([wbout], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-
-    let formData = new FormData();
-    formData.append('file', blob, 'spreadsheet.xlsx');
-    
-    this.http.post('api/controlled-substances/configure', formData).subscribe((response) => {
-      console.log(response);
-    });
-  }
-
-  loadData() {
-    
-    this.http.get('api/controlled-substances/configure', { responseType: 'blob' }).subscribe((response: any) => {
-      const reader: FileReader = new FileReader();
-      reader.onloadend = (e) => {
-        const data = new Uint8Array(e.target!.result as ArrayBuffer);
-        const workbook = XLSX.read(data, {type: 'array'});
-        var firstSheetName = workbook.SheetNames[0];
-        var worksheet = workbook.Sheets[firstSheetName];
-        var sheetData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-  
-        var headers = sheetData.shift();
-        this.data = sheetData as any;
-        console.log(this.data);
-        this.setUpJsSpreadsheet();
-        
-      };
-      reader.readAsArrayBuffer(response);
-      // read blob data
-
-      
-
-    });
+  get api() {
+    if (this.selected === 1 ) {
+      return 'api/controlled-substances/configure';
+    } else if (this.selected === 2) {
+      return 'api/industry/gas-chromatography/configure';
+    }
+    return 'api/industry/spectophotometria/configure';
   }
   
+  get title() {
+    if (this.selected === 1 ) {
+      return 'Parametari gasne hromatografije kod kontrolisanih supstanci:';
+    } else if (this.selected === 2) {
+      return 'Parametari gasne hromatografije kod industrijskih toksina:';
+    }
+    return 'Parametari spektofotometrije kod industrijskih toksina:';
+  }
+
 }
