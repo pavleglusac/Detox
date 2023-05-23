@@ -53,6 +53,21 @@ columnsGcIndustry = [
   { title: 'Time Vinil hlorid', width: 100 },
 ]
 
+columnsSpectrophotometry = [
+  { title: 'Naziv', width: 100 },
+  { title: 'Min Teški metali', width: 100 },
+  { title: 'Max Teški metali', width: 100 },
+  { title: 'Amount Teški metali', width: 100 },
+  { title: 'Min Cijanid', width: 100 },
+  { title: 'Max Cijanid', width: 100 },
+  { title: 'Amount Cijanid', width: 100 },
+  { title: 'Min Nitriti', width: 100 },
+  { title: 'Max Nitriti', width: 100 },
+  { title: 'Amount Nitriri', width: 100 },
+  { title: 'Min Pesticidi', width: 100 },
+  { title: 'Max Pesticidi', width: 100 },
+  { title: 'Amount Pesticidi', width: 100 },
+]
 
   changeSelect(num: number) {
     this.selected = num;
@@ -64,7 +79,7 @@ columnsGcIndustry = [
     } else if (this.selected === 2) {
       return this.columnsGcIndustry;
     }
-    return this.columnsGcIndustry;
+    return this.columnsSpectrophotometry;
   }
 
   get api() {
@@ -73,7 +88,7 @@ columnsGcIndustry = [
     } else if (this.selected === 2) {
       return 'api/industry/gas-chromatography/configure';
     }
-    return 'api/industry/spectophotometria/configure';
+    return 'api/industry/spectrophotometry/configure';
   }
   
   get title() {

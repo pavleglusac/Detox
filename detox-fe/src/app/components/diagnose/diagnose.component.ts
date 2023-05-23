@@ -93,11 +93,15 @@ export class DiagnoseComponent{
 
   startTest = (question: Question) => {
     let api = this.diagnosis?.type === DiagnosisType.INDUSTRY ? 'industry' : 'controlled-substances';
-    this.diagnoseService.startGasChromatography(
+    question.type === 'gasna-hromatografija' ? this.diagnoseService.startGasChromatography(
       api,
       (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
       (error: any)=>{this.toastr.error(error.message);}
-      )
+      ) :
+      this.diagnoseService.startSpectrophotometry(
+        (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
+        (error: any)=>{this.toastr.error(error.message);}
+        )
   }
 
   updateDiagnosis(question: Question, newQuestion: Question): void {

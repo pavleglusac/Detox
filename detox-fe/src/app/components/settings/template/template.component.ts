@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild, Input, AfterViewInit, SimpleChanges } from '@angular/core';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import * as jspreadsheet from "jspreadsheet-ce";
+import { ToastrService } from 'ngx-toastr';
 import * as XLSX from 'xlsx'
 
 @Component({
@@ -20,7 +21,7 @@ export class TemplateComponent {
   title = "CodeSandbox";
   data = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private toastr: ToastrService) { }
 
   
   ngOnChanges(changes: SimpleChanges) {
@@ -59,10 +60,12 @@ export class TemplateComponent {
     
     this.http.post(this.api, formData).subscribe((response) => {
       console.log(response);
+      this.toastr.success("Uspešno ste sačuvali podatke");
     });
   }
 
   loadData() {
+    console.log(this.columns)
     this.data = [];
     this.http.get(this.api, { responseType: 'blob' }).subscribe((response: any) => {
       const reader: FileReader = new FileReader();

@@ -5,6 +5,7 @@ import com.sbnz.detox.model.DiagnosisResponse;
 import com.sbnz.detox.model.DiagnosisResult;
 import com.sbnz.detox.service.GasChromatographyIndustryService;
 import com.sbnz.detox.service.IndustryService;
+import com.sbnz.detox.service.SpectophotometryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,9 @@ public class IndustryController {
 
     @Autowired
     private GasChromatographyIndustryService gasChromatographyIndustryService;
+
+    @Autowired
+    private SpectophotometryService spectophotometryService;
 
     @PatchMapping("/add")
     public DiagnosisResponse addIndustrySymptom(@RequestParam("diagnosisId") Long diagnosisId,
@@ -46,6 +50,26 @@ public class IndustryController {
     @GetMapping("gas-chromatography/configure")
     public ResponseEntity<?> getFile() {
         return industryService.getFileGC();
+    }
+
+    @GetMapping("/run-spectophotometry")
+    public DiagnosisResult runSpectrophotometry() throws IllegalAccessException, InstantiationException, FileNotFoundException {
+        return spectophotometryService.runSpectrophotometry();
+    }
+
+    @PostMapping("spectrophotometry/configure")
+    public ResponseEntity<?> handleFileUploadSpectrophotometry(@RequestParam("file") MultipartFile file) {
+
+        // save multipart file to server
+        industryService.saveFileSpectro(file);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // return excel file from server
+    @GetMapping("spectrophotometry/configure")
+    public ResponseEntity<?> getFileSpectophotometry() {
+        return industryService.getFileSpectro();
     }
 
 }

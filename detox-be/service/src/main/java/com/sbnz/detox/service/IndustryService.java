@@ -39,6 +39,7 @@ public class IndustryService {
     private KieContainer kieContainer;
 
     private final String XSLS_GC_FILE_PATH = "./kjar/src/main/resources/industryGasTemplate.xlsx";
+    private final String XSLS_SPECTRO_FILE_PATH = "./kjar/src/main/resources/spectophotometryTemplate.xlsx";
 
     public DiagnosisResponse patchIndustrySymptom(Long diagnosisId, JsonPatch patch) {
         Diagnosis diagnosis = diagnosisRepository
@@ -134,4 +135,35 @@ public class IndustryService {
         }
 
     }
+
+    public void saveFileSpectro(MultipartFile file) {
+        // save file to resources folder
+        String path = XSLS_SPECTRO_FILE_PATH;
+        try {
+            // create file if it doesn't exist
+            Files.copy(file.getInputStream(), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save file");
+        }
+
+    }
+
+    public ResponseEntity<?> getFileSpectro() {
+        // return file from path
+        String path = XSLS_SPECTRO_FILE_PATH;
+        // get input stream and write it to response
+        try {
+            InputStream inputStream = Files.newInputStream(Paths.get(path));
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=file.xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(inputStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to get file");
+        }
+
+    }
+
 }

@@ -90,5 +90,20 @@ export class DiagnoseService {
             },
           });
         }
+
+        startSpectrophotometry = (
+          successCb: (value: any) => void,
+          errorCb: (error: any) => void) => {
+            this.http
+            .get(`api/industry/run-spectophotometry`,)
+            .subscribe({
+              next(value: any) {
+                successCb(value);
+              },
+              error(err: any) {
+                errorCb(err.error);
+              },
+            });
+          }
   
 }
