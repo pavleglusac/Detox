@@ -24,7 +24,7 @@ export class DiagnoseComponent{
   faReset: IconDefinition = faRepeat;
 
   diagnosis: Diagnosis | null = null;
-  loginForm = new FormGroup({
+  form = new FormGroup({
     email: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
@@ -40,8 +40,8 @@ export class DiagnoseComponent{
   }
 
   onSubmit = () => {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     };
     this.diagnoseService.startDiagnosis(
@@ -94,11 +94,13 @@ export class DiagnoseComponent{
   startTest = (question: Question) => {
     let api = this.diagnosis?.type === DiagnosisType.INDUSTRY ? 'industry' : 'controlled-substances';
     question.type === 'gasna-hromatografija' ? this.diagnoseService.startGasChromatography(
+      this.diagnosis!.id,
       api,
       (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
       (error: any)=>{this.toastr.error(error.message);}
       ) :
       this.diagnoseService.startSpectrophotometry(
+        this.diagnosis!.id,
         (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
         (error: any)=>{this.toastr.error(error.message);}
         )
@@ -117,16 +119,37 @@ export class DiagnoseComponent{
     }
   }
 
+  resetDaignosing = () => {
+    this.diagnoseService.resetSymptoms(
+      this.diagnosis!.id,
+      (value: any) => {
+        this.questionAnswer = '';
+        this.showTestButton = true;
+        this.diagnosis!.questions = [new Question("Da li pacijent radi u industriji?", ["Da", "Ne"], '')];
+        this.diagnosisStateService.setDiagnosisState(this.diagnosis!);
+      },
+      (error: any) => {this.toastr.error(error.message);}
+    );
+  }
+
+  endDiagnosing = () => {
+    this.diagnoseService.endDiagnosis(
+      this.diagnosis!.id,
+      (value: any) => {this.startAgain()},
+      (error: any) => {this.toastr.error(error.message);}
+    );
+  }
+
   startAgain = () => {
     this.questionAnswer = '';
     this.showTestButton = true;
     this.diagnosis = null;
-    this.loginForm.reset();
+    this.form.reset();
     this.diagnosisStateService.clearDiagnosisState();
   }
 
   get email() {
-    return this.loginForm.get('email');
+    return this.form.get('email');
   }
 
   get answeredQuestions() {

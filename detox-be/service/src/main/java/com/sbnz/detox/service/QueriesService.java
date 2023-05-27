@@ -67,9 +67,31 @@ public class QueriesService {
 
     List<QueryModel> industryModel = new ArrayList<>(
             Arrays.asList(
-                    new QueryModel("PODVRSTA", "VRSTA", "VREDNOST VRSTE ZA PODVRSTU"),
-                    new QueryModel("PODVRSTA", "VRSTA", "VREDNOST VRSTE ZA PODVRSTU")
-            )
+                    new QueryModel("Azbest", "pulmonaryEdema", "false"),
+                    new QueryModel("Ozon", "pulmonaryEdema", "true"),
+                    new QueryModel("Vodoni sulfid", "epaTest", "true"),
+                    new QueryModel("pulmonaryEdema", "epaTest", "false"),
+                    new QueryModel("epaTest", "damageToTheRespiratoryTract", "LOWER"),
+                    new QueryModel("Gasna hromatografija", "ffpTest", "false"),
+                    new QueryModel("Sumpor dioksid", "ffpTest", "true"),
+                    new QueryModel("Gasna hromatografija", "ormTest", "false"),
+                    new QueryModel("ffpTest", "ormTest", "true"),
+                    new QueryModel("ormTest", "damageToTheRespiratoryTract", "UPPER"),
+                    new QueryModel("damageToTheRespiratoryTract", "showsMethemoglobinemia", "false"),
+                    new QueryModel("giTest", "showsMethemoglobinemia", "true"),
+                    new QueryModel("Azotovi oksidi", "giTest", "true"),
+                    new QueryModel("amilNitriteTest", "giTest", "false"),
+                    new QueryModel("Cijanidi", "amilNitriteTest", "true"),
+                    new QueryModel("Spektrofotometrija", "amilNitriteTest", "false"),
+                    new QueryModel("showsMethemoglobinemia", "worksWithToxicGases", "true"),
+                    new QueryModel("cns", "worksWithToxicGases", "false"),
+                    new QueryModel("potassiumDichromateTest", "cns", "true"),
+                    new QueryModel("neurotoxicity", "cns", "false"),
+                    new QueryModel("Alkoholna supstanca", "potassiumDichromateTest", "true"),
+                    new QueryModel("Gasna hromatografija", "potassiumDichromateTest", "false"),
+                    new QueryModel("Gasna hromatografija", "neurotoxicity", "false"),
+                    new QueryModel("Ugljen disulfid", "neurotoxicity", "true")
+                    )
     );
 
     @Autowired
@@ -162,7 +184,7 @@ public class QueriesService {
         for (java.lang.reflect.Field field : currentClass.getDeclaredFields()) {
             field.setAccessible(true);
             Object value = field.get(symptoms);
-            if(value == null || value.toString().equals("NOT_TESTED")) continue;
+            if(value == null || value.toString().equals("NOT_TESTED") || value.toString().equals("NONE")) continue;
             Query query = new Query(field.getName(), value.toString(), testSubstance, false);
             kieSession.insert(query);
             kieSession.fireAllRules();
@@ -184,18 +206,20 @@ public class QueriesService {
 
         industryModel.forEach(kieSession::insert);
         // get only the last diagnosis for each patient
-        HashSet<String> potentialEndageredPatients = new HashSet<>();
+        HashSet<String> potentialEndangeredPatients = new HashSet<>();
         List<Diagnosis> diagnoses = diagnosisRepository.findLastDiagnosisForPatients();
         for (Diagnosis diagnosis: diagnoses) {
-            if (diagnosis.getSymptoms() instanceof ControlledSubstancesSymptoms) {
-                IndustrySymptoms controlledSubstancesSymptoms = (IndustrySymptoms) diagnosis.getSymptoms();
-                if (testForPresence("Ugljen-disulfid", controlledSubstancesSymptoms, kieSession) || testForPresence("Cijanidi", controlledSubstancesSymptoms, kieSession)) {
-                    potentialEndageredPatients.add(diagnosis.getPatient().getEmail());
+            System.out.println("DIJAGNOZA ZA MAMLAZA");
+            if (diagnosis.getSymptoms() instanceof IndustrySymptoms industrySymptoms) {
+                System.out.println("MAMLAZ U INDUSTRIJI");
+                if (testForPresence("Ugljen disulfid", industrySymptoms, kieSession) || testForPresence("Cijanidi", industrySymptoms, kieSession)) {
+                    potentialEndangeredPatients.add(diagnosis.getPatient().getEmail());
                 }
             }
         }
-        return potentialEndageredPatients.stream().toList();
+        return potentialEndangeredPatients.stream().toList();
     }
+
 
 
     public List<String> testsNeededForToxin(String toxin) {
@@ -218,6 +242,7 @@ public class QueriesService {
         kieSession.dispose();
         kieSession = kieContainer.newKieSession("ksession");
         industryModel.forEach(kieSession::insert);
+        results = kieSession.getQueryResults("korisnikKokainaHelper", new Object[]{ toxin, Variable.v });
         for (QueryResultsRow row : results) {
             String vrstaParam = (String) row.get("vrstaParam");
             result.add(vrstaParam);

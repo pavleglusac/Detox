@@ -8,6 +8,22 @@ export class DiagnoseService {
 
   constructor(private http: HttpClient) { }
 
+  loadDiagnosis = (
+    email: string,
+    successCb: (value: any) => void,
+    errorCb: (error: any) => void) => {
+      this.http
+      .get(`api/diagnosis/all?userEmail=${email}`,{})
+      .subscribe({
+        next(value: any) {
+          successCb(value);
+        },
+        error(err: any) {
+          errorCb(err);
+        },
+      });
+    }
+
   startDiagnosis = (
     userEmail: string,  
     successCb: (value: any) => void,
@@ -40,6 +56,38 @@ export class DiagnoseService {
         },
       });
     }
+
+    endDiagnosis = (
+      id: number,
+      successCb: (value: any) => void,
+      errorCb: (error: any) => void) => {
+        this.http
+        .patch(`api/diagnosis/end-diagnosis?diagnosisId=${id}`,{})
+        .subscribe({
+          next(value: any) {
+            successCb(value);
+          },
+          error(err: any) {
+            errorCb(err);
+          },
+        });
+      }
+
+      resetSymptoms = (
+        id: number,
+        successCb: (value: any) => void,
+        errorCb: (error: any) => void) => {
+          this.http
+          .patch(`api/diagnosis/reset-symptoms?diagnosisId=${id}`,{})
+          .subscribe({
+            next(value: any) {
+              successCb(value);
+            },
+            error(err: any) {
+              errorCb(err);
+            },
+          });
+        }
 
     addControlledSubstancesSymptom = (
       id: number,
@@ -76,11 +124,12 @@ export class DiagnoseService {
       }
 
       startGasChromatography = (
+        id: number,
         api: string,
         successCb: (value: any) => void,
         errorCb: (error: any) => void) => {
           this.http
-          .get(`api/${api}/run-gas-chromatography`,)
+          .get(`api/${api}/run-gas-chromatography?diagnosisId=${id}`,)
           .subscribe({
             next(value: any) {
               successCb(value);
@@ -92,10 +141,11 @@ export class DiagnoseService {
         }
 
         startSpectrophotometry = (
+          id: number,
           successCb: (value: any) => void,
           errorCb: (error: any) => void) => {
             this.http
-            .get(`api/industry/run-spectophotometry`,)
+            .get(`api/industry/run-spectophotometry?diagnosisId=${id}`,)
             .subscribe({
               next(value: any) {
                 successCb(value);

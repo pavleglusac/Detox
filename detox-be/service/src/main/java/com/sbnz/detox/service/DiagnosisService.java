@@ -15,6 +15,9 @@ public class DiagnosisService {
     private PatientRepository patientRepository;
 
     @Autowired
+    private DiagnosisResponseRepository diagnosisResponseRepository;
+
+    @Autowired
     private DiagnosisRepository diagnosisRepository;
 
     @Autowired
@@ -106,13 +109,21 @@ public class DiagnosisService {
         Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
         diagnosis.setDiagnosisResult(result);
         diagnosis.setFinished(true);
+        diagnosisResponseRepository.save(result);
         diagnosisRepository.save(diagnosis);
     }
 
     public void resetSymptoms(Long diagnosisId) {
         // set symptoms to null
         Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+        Symptoms symptoms = diagnosis.getSymptoms();
+        if (symptoms instanceof IndustrySymptoms) {
+            industrySymptomsRepository.delete((IndustrySymptoms) symptoms);
+        } else if (symptoms instanceof ControlledSubstancesSymptoms) {
+            controlledSubstancesSymptomsRepository.delete((ControlledSubstancesSymptoms) symptoms);
+        }
         diagnosis.setSymptoms(null);
+        diagnosis.setFinished(false);
         diagnosisRepository.save(diagnosis);
         // set diagnosis result to null
         diagnosis.setDiagnosisResult(null);
