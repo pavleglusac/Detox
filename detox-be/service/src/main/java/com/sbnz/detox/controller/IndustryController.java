@@ -3,6 +3,7 @@ package com.sbnz.detox.controller;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.sbnz.detox.model.DiagnosisResponse;
 import com.sbnz.detox.model.DiagnosisResult;
+import com.sbnz.detox.service.DiagnosisService;
 import com.sbnz.detox.service.GasChromatographyIndustryService;
 import com.sbnz.detox.service.IndustryService;
 import com.sbnz.detox.service.SpectophotometryService;
@@ -26,6 +27,9 @@ public class IndustryController {
     @Autowired
     private SpectophotometryService spectophotometryService;
 
+    @Autowired
+    private DiagnosisService diagnosisService;
+
     @PatchMapping("/add")
     public DiagnosisResponse addIndustrySymptom(@RequestParam("diagnosisId") Long diagnosisId,
                                                            @RequestBody JsonPatch patch) {
@@ -33,8 +37,10 @@ public class IndustryController {
     }
 
     @GetMapping("/run-gas-chromatography")
-    public DiagnosisResult runGasChromatography() throws IllegalAccessException, InstantiationException, FileNotFoundException {
-        return gasChromatographyIndustryService.runGasChromatography();
+    public DiagnosisResult runGasChromatography(@RequestParam("diagnosisId") Long diagnosisId) throws IllegalAccessException, InstantiationException, FileNotFoundException {
+        DiagnosisResult result = gasChromatographyIndustryService.runGasChromatography();
+        diagnosisService.setDiagnosisResult(diagnosisId, result);
+        return result;
     }
 
     @PostMapping("gas-chromatography/configure")
@@ -53,8 +59,10 @@ public class IndustryController {
     }
 
     @GetMapping("/run-spectophotometry")
-    public DiagnosisResult runSpectrophotometry() throws IllegalAccessException, InstantiationException, FileNotFoundException {
-        return spectophotometryService.runSpectrophotometry();
+    public DiagnosisResult runSpectrophotometry(@RequestParam("diagnosisId") Long diagnosisId) throws IllegalAccessException, InstantiationException, FileNotFoundException {
+        DiagnosisResult result = spectophotometryService.runSpectrophotometry();
+        diagnosisService.setDiagnosisResult(diagnosisId, result);
+        return result;
     }
 
     @PostMapping("spectrophotometry/configure")

@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.sbnz.detox.model.*;
 import com.sbnz.detox.repository.ControlledSubstancesSymptomsRepository;
 import com.sbnz.detox.repository.DiagnosisRepository;
+import com.sbnz.detox.repository.DiagnosisResponseRepository;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -40,6 +41,9 @@ public class ControlledSubstancesService {
 
     private final String XSLS_FILE_PATH = "./kjar/src/main/resources/substancesTemplate.xlsx";
 
+    @Autowired
+    private DiagnosisResponseRepository diagnosisResponseRepository;
+
 
     public DiagnosisResponse patchControlledSubstanceSymptom(Long diagnosisId, JsonPatch patch) {
         Diagnosis diagnosis = diagnosisRepository
@@ -61,7 +65,14 @@ public class ControlledSubstancesService {
         diagnosisRepository.save(diagnosis);
         controlledSubstancesSymptomsRepository.save(symptomsPatched);
 
-        return diagnoseSymptoms(symptomsPatched);
+        DiagnosisResponse diagnosisResponse = diagnoseSymptoms(symptomsPatched);
+        if (diagnosisResponse instanceof DiagnosisResult result) {
+            diagnosis.setDiagnosisResult(result);
+            diagnosisResponseRepository.save(result);
+            diagnosis.setFinished(true);
+            diagnosisRepository.save(diagnosis);
+        }
+        return diagnosisResponse;
     }
 
     public DiagnosisResponse diagnoseSymptoms(ControlledSubstancesSymptoms symptomsPatched) {

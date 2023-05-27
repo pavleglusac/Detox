@@ -6,7 +6,6 @@ import com.sbnz.detox.model.queries.Query;
 import com.sbnz.detox.model.queries.QueryModel;
 import com.sbnz.detox.repository.DiagnosisRepository;
 import com.sbnz.detox.repository.PatientRepository;
-import com.sbnz.detox.repository.UserRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -23,12 +22,53 @@ import java.util.*;
 public class QueriesService {
 
 
-    List<QueryModel> model = new ArrayList<>(
+    List<QueryModel> drugsModel = new ArrayList<>(
             Arrays.asList(
                     new QueryModel("Kokain", "urineTest", "PRESENCE_BENZOILECGONINE"),
+                    new QueryModel("Marihuana", "urineTest", "PRESENCE_11_HYDROXY_9_TETRAHYDROCANNABINOL"),
                     new QueryModel("Amfetamini", "urineTest", "PRESENCE_AMPHETAMINE"),
-                    new QueryModel("urineTest", "AffectsCNS", "false"),
-                    new QueryModel("AffectsCNS", "chromatographicImunoassayTest", "DRUGS")
+                    new QueryModel("urineTest", "CNSDepression", "false"),
+                    new QueryModel("CNSDepression", "chromatographicImunoassayTest", "DRUGS"),
+                    new QueryModel("ReactsToKVS", "chromatographicImunoassayTest", "MEDICINE"),
+
+                    //
+                    new QueryModel("LocksonTest", "CNSDepression", "true"),
+                    new QueryModel("Morfin", "LocksonTest", "true"),
+                    new QueryModel("TLCAcidicTest", "LocksonTest", "false"),
+                    new QueryModel("Gasna hromatografija", "TLCAcidicTest", "false"),
+                    new QueryModel("Convulsions", "TLCAcidicTest", "true"),
+                    new QueryModel("Kodein", "Convulsions", "false"),
+                    new QueryModel("Tramadol", "Convulsions", "true"),
+
+
+                    //
+                    new QueryModel("Penicilin", "HasArds", "false"),
+                    new QueryModel("Bleomicin", "HasArds", "true"),
+                    new QueryModel("HasArds", "HasLungFibrosis", "false"),
+                    new QueryModel("Ciklosporin", "HasLungFibrosis", "true"),
+                    new QueryModel("HasLungFibrosis", "AffectsCNS", "false"),
+
+                    new QueryModel("Benzodiazepini", "InDeepComa", "false"),
+                    new QueryModel("Barbiturati", "InDeepComa", "true"),
+                    new QueryModel("InDeepComa", "AffectsCNS", "true"),
+
+                    new QueryModel("AffectsCNS", "ReactsToKVS", "false"),
+                    new QueryModel("TLCBasicTest", "ReactsToKVS", "true"),
+                    new QueryModel("AcidityTest", "TLCBasicTest", "false"),
+                    new QueryModel("Beta blokatori", "TLCBasicTest", "false"),
+                    new QueryModel("ACE inhibitori", "AcidityTest", "false"),
+                    new QueryModel("Salicilati", "AcidityTest", "false")
+
+
+
+            )
+    );
+
+
+    List<QueryModel> industryModel = new ArrayList<>(
+            Arrays.asList(
+                    new QueryModel("PODVRSTA", "VRSTA", "VREDNOST VRSTE ZA PODVRSTU"),
+                    new QueryModel("PODVRSTA", "VRSTA", "VREDNOST VRSTE ZA PODVRSTU")
             )
     );
 
@@ -47,16 +87,15 @@ public class QueriesService {
         KieServices ks = KieServices.Factory.get();
         KieContainer kieContainer = ks.newKieContainer(ks.newReleaseId("com.sbnz", "kjar", "0.0.1-SNAPSHOT"));
         KieSession kieSession = kieContainer.newKieSession("ksession");
-        model.forEach(kieSession::insert);
-        
+
         // check if sympyoms are controlled substances or industry
         if (diagnosis.getSymptoms() instanceof ControlledSubstancesSymptoms) {
+            drugsModel.forEach(kieSession::insert);
             return furtherTests(diagnosis.getSymptoms(), true, kieSession);
         } else {
+            industryModel.forEach(kieSession::insert);
             return furtherTests(diagnosis.getSymptoms(), false, kieSession);
         }
-
-
     }
 
 
@@ -65,7 +104,7 @@ public class QueriesService {
         // keep only the minimum subset for every rule fired (if there are more than one)
         List<String> furtherTests = new ArrayList<>();
         HashSet<String> tempTests = new HashSet<>();
-        Field[] fields ;
+        Field[] fields;
         if (controlledSubstances) {
             fields = ((ControlledSubstancesSymptoms) symptoms).getClass().getDeclaredFields();
         } else {
@@ -79,6 +118,7 @@ public class QueriesService {
             QueryResults results = kieSession.getQueryResults("korisnikKokaina", new Object[]{ Variable.v, field.getName(), value.toString() });
             for (QueryResultsRow row : results) {
                 String podvrsta = (String) row.get("podvrstaParam");
+                tempTests.add(podvrsta);
                 QueryResults resultsSub = kieSession.getQueryResults("korisnikKokainaHelper", new Object[]{ Variable.v, podvrsta });
                 for (QueryResultsRow rowSub : resultsSub) {
                     String vrednost = (String) rowSub.get("podvrstaParam");
@@ -100,7 +140,7 @@ public class QueriesService {
         KieContainer kieContainer = ks.newKieContainer(ks.newReleaseId("com.sbnz", "kjar", "0.0.1-SNAPSHOT"));
         KieSession kieSession = kieContainer.newKieSession("ksession");
 
-        model.forEach(kieSession::insert);
+        drugsModel.forEach(kieSession::insert);
         // get only the last diagnosis for each patient
         HashSet<String> potentialHeavyDrugsUsers = new HashSet<>();
         List<Diagnosis> diagnoses = diagnosisRepository.findLastDiagnosisForPatients();
@@ -116,12 +156,12 @@ public class QueriesService {
     }
 
 
-    public boolean testForPresence(String testSubstance, ControlledSubstancesSymptoms controlledSubstancesSymptoms, KieSession kieSession) throws IllegalAccessException {
+    public boolean testForPresence(String testSubstance, Symptoms symptoms, KieSession kieSession) throws IllegalAccessException {
         boolean allWereTrue = true;
-
-        for (java.lang.reflect.Field field : controlledSubstancesSymptoms.getClass().getDeclaredFields()) {
+        Class<?> currentClass = symptoms.getClass();
+        for (java.lang.reflect.Field field : currentClass.getDeclaredFields()) {
             field.setAccessible(true);
-            Object value = field.get(controlledSubstancesSymptoms);
+            Object value = field.get(symptoms);
             if(value == null || value.toString().equals("NOT_TESTED")) continue;
             Query query = new Query(field.getName(), value.toString(), testSubstance, false);
             kieSession.insert(query);
@@ -131,6 +171,57 @@ public class QueriesService {
                 break;
             }
         }
+
         return allWereTrue;
+    }
+
+
+
+    public List<String> getPotentialLifeEndangered() throws IllegalAccessException {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kieContainer = ks.newKieContainer(ks.newReleaseId("com.sbnz", "kjar", "0.0.1-SNAPSHOT"));
+        KieSession kieSession = kieContainer.newKieSession("ksession");
+
+        industryModel.forEach(kieSession::insert);
+        // get only the last diagnosis for each patient
+        HashSet<String> potentialEndageredPatients = new HashSet<>();
+        List<Diagnosis> diagnoses = diagnosisRepository.findLastDiagnosisForPatients();
+        for (Diagnosis diagnosis: diagnoses) {
+            if (diagnosis.getSymptoms() instanceof ControlledSubstancesSymptoms) {
+                IndustrySymptoms controlledSubstancesSymptoms = (IndustrySymptoms) diagnosis.getSymptoms();
+                if (testForPresence("Ugljen-disulfid", controlledSubstancesSymptoms, kieSession) || testForPresence("Cijanidi", controlledSubstancesSymptoms, kieSession)) {
+                    potentialEndageredPatients.add(diagnosis.getPatient().getEmail());
+                }
+            }
+        }
+        return potentialEndageredPatients.stream().toList();
+    }
+
+
+    public List<String> testsNeededForToxin(String toxin) {
+        System.out.println("Uso");
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kieContainer = ks.newKieContainer(ks.newReleaseId("com.sbnz", "kjar", "0.0.1-SNAPSHOT"));
+        KieSession kieSession = kieContainer.newKieSession("ksession");
+
+        HashSet<String> result = new HashSet<>();
+
+        drugsModel.forEach(kieSession::insert);
+
+        QueryResults results = kieSession.getQueryResults("korisnikKokainaHelper", new Object[]{ toxin, Variable.v });
+        for (QueryResultsRow row : results) {
+            String vrstaParam = (String) row.get("vrstaParam");
+            result.add(vrstaParam);
+        }
+
+        // clear kie session
+        kieSession.dispose();
+        kieSession = kieContainer.newKieSession("ksession");
+        industryModel.forEach(kieSession::insert);
+        for (QueryResultsRow row : results) {
+            String vrstaParam = (String) row.get("vrstaParam");
+            result.add(vrstaParam);
+        }
+        return result.stream().toList();
     }
 }

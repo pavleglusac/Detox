@@ -77,6 +77,7 @@ public class DiagnosisService {
         return diagnosis;
     }
 
+
     public DiagnosisResponse setSymptomsType(Long diagnosisId, String symptomsType) {
 
         Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
@@ -99,5 +100,30 @@ public class DiagnosisService {
         diagnosis.setSymptoms(symptoms);
         diagnosisRepository.save(diagnosis);
         return diagnosisResponse;
+    }
+
+    public void setDiagnosisResult(Long diagnosisId, DiagnosisResult result) {
+        Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+        diagnosis.setDiagnosisResult(result);
+        diagnosis.setFinished(true);
+        diagnosisRepository.save(diagnosis);
+    }
+
+    public void resetSymptoms(Long diagnosisId) {
+        // set symptoms to null
+        Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+        diagnosis.setSymptoms(null);
+        diagnosisRepository.save(diagnosis);
+        // set diagnosis result to null
+        diagnosis.setDiagnosisResult(null);
+        diagnosisRepository.save(diagnosis);
+    }
+
+    public void endDiagnosis(Long diagnosisId) {
+        Diagnosis diagnosis = diagnosisRepository.findById(diagnosisId).orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+        diagnosis.setFinished(true);
+        DiagnosisResult diagnosisResult = new DiagnosisResult();
+        diagnosisResult.setContent("NOT FINISHED");
+        diagnosisRepository.save(diagnosis);
     }
 }

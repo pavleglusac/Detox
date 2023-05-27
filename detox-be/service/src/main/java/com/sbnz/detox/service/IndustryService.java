@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.sbnz.detox.model.*;
 import com.sbnz.detox.repository.DiagnosisRepository;
+import com.sbnz.detox.repository.DiagnosisResponseRepository;
 import com.sbnz.detox.repository.IndustrySymptomsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -38,6 +39,9 @@ public class IndustryService {
     @Autowired
     private KieContainer kieContainer;
 
+    @Autowired
+    private DiagnosisResponseRepository diagnosisResponseRepository;
+
     private final String XSLS_GC_FILE_PATH = "./kjar/src/main/resources/industryGasTemplate.xlsx";
     private final String XSLS_SPECTRO_FILE_PATH = "./kjar/src/main/resources/spectophotometryTemplate.xlsx";
 
@@ -61,7 +65,14 @@ public class IndustryService {
         diagnosisRepository.save(diagnosis);
         industrySymptomsRepository.save(symptomsPatched);
 
-        return diagnoseSymptoms(symptomsPatched);
+        DiagnosisResponse diagnosisResponse = diagnoseSymptoms(symptomsPatched);
+        if (diagnosisResponse instanceof DiagnosisResult result) {
+            diagnosis.setDiagnosisResult(result);
+            diagnosisResponseRepository.save(result);
+            diagnosis.setFinished(true);
+            diagnosisRepository.save(diagnosis);
+        }
+        return diagnosisResponse;
     }
 
     public DiagnosisResponse diagnoseSymptoms(IndustrySymptoms symptomsPatched) {
