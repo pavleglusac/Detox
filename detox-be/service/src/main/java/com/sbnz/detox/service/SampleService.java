@@ -16,11 +16,11 @@ public class SampleService {
         this.kieContainer = kieContainer;
 
         // add a string to the session
-        KieSession kieSession = kieContainer.newKieSession("cepKsession");
-        kieSession.insert("Djes ba");
-        kieSession.fireAllRules();
-        Greeting greeting = new Greeting("mjaujork sad je u krizi");
-        kieSession.insert(greeting);
-        kieSession.fireAllRules();
+//        KieSession kieSession = kieContainer.newKieSession("cepKsession");
+//        kieSession.insert("Djes ba");
+//        kieSession.fireAllRules();
+//        Greeting greeting = new Greeting("mjaujork sad je u krizi");
+//        kieSession.insert(greeting);
+//        kieSession.fireAllRules();
     }
 }

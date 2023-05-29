@@ -1,0 +1,76 @@
+template header
+  paramsName
+  HMAbsorbanceMin
+  HMAbsorbanceMax
+  HMAmount
+  cyanideAbsorbanceMin
+  cyanideAbsorbanceMax
+  cyanideAmount
+  nitriteAbsorbanceMin
+  nitriteAbsorbanceMax
+  nitriteAmount
+  pesticideWavelengthMin
+  pesticideWavelengthMax
+  pesticideAmount
+
+package rules.industry;
+import com.sbnz.detox.model.spectrophotometry.*;
+import com.sbnz.detox.model.DiagnosisResult;
+
+template "industry-toxins-spectophotometry"
+
+rule "Detect Heavy Metal @{paramsName}"
+    when
+        $sumAbsorbance: Number() from accumulate (
+            $sample: HeavyMetals() over window:length(@{HMAmount}),
+            sum($sample.getAbsorbance())
+        )
+        eval($sumAbsorbance.doubleValue() <= @{HMAbsorbanceMax})
+        eval($sumAbsorbance.doubleValue() > @{HMAbsorbanceMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} TEŠKI METALI"));
+        System.out.printf("Detected Heavy Metal: Sum of Absorbance over last 3 samples = %.2f%n", $sumAbsorbance);
+end
+
+rule "Detect Cyanide @{paramsName}"
+    when
+        $avgAbsorbance: Number() from accumulate (
+            $sample: Cyanide() over window:length(@{cyanideAmount}),
+            average($sample.getAbsorbance())
+        )
+        eval($avgAbsorbance.doubleValue() > @{cyanideAbsorbanceMin} && $avgAbsorbance.doubleValue() <= @{cyanideAbsorbanceMax})
+    then
+        insert(new DiagnosisResult("@{paramsName} CIJANID"));
+        System.out.printf("Detected Cyanide: Average Absorbance over last 4 samples = %.2f%n", $avgAbsorbance);
+end
+
+rule "Detect Nitrite @{paramsName}"
+    when
+        $maxAbsorbance: Number() from accumulate (
+            $sample: Nitrite() over window:length(@{nitriteAmount}),
+            max($sample.getAbsorbance())
+        )
+        $minAbsorbance: Number() from accumulate (
+            $sample: Nitrite() over window:length(@{nitriteAmount}),
+            min($sample.getAbsorbance())
+        )
+        eval($maxAbsorbance.doubleValue() - $minAbsorbance.doubleValue() <= @{nitriteAbsorbanceMax})
+        eval($maxAbsorbance.doubleValue() - $minAbsorbance.doubleValue() > @{nitriteAbsorbanceMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} NITRIT"));
+        System.out.printf("Detected Nitrite: Maximum Absorbance over last 5 samples = %.2f%n", $maxAbsorbance);
+end
+
+rule "Detect Pesticide @{paramsName}"
+    when
+        $countSamples: Number() from accumulate (
+            $sample: Pesticide(getWavelength() <= @{pesticideWavelengthMax}, getWavelength() > @{pesticideWavelengthMin}) over window:length(@{pesticideAmount}),
+            count($sample)
+        )
+        eval($countSamples.intValue() > 4)
+    then
+        insert(new DiagnosisResult("@{paramsName} PESTICIDI"));
+        System.out.printf("Detected Pesticide: %d samples with wavelength between 450 and 600 over last 6 samples%n", $countSamples);
+end
+
+end template

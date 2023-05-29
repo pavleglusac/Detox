@@ -1,4 +1,4 @@
-package cep;
+package industry;
 
 import com.sbnz.detox.model.*;
 

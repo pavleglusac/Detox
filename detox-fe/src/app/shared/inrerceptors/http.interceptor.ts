@@ -17,7 +17,7 @@ import {
       next: HttpHandler
     ): Observable<HttpEvent<any>> {
       request = request.clone({ url: `${baseUrl}/${request.url}`, withCredentials: true });
-      const token = sessionStorage.getItem(tokenName);
+      const token = localStorage.getItem(tokenName);
       if (token) {
         const authReq = request.clone({
           headers: new HttpHeaders({

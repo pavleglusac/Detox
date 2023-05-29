@@ -1,3 +1,23 @@
-<div class="w-full h-full flex justify-center items-center backdrop-brightness-150 rounded-3xl">
-    <p class="text-light text-3xl">USER PROFILE</p>
+<div class="w-full h-full flex gap-x-10 justify-start items-start p-20 px-36 backdrop-brightness-150 rounded-3xl">
+    <div [ngClass]="user!.role === 'ROLE_PATIENT' ? 'border-r border-medium' : ''" class="flex gap-x-10 justify-start items-start w-1/2 h-full">
+        <img src="/assets/images/profile_pic.png" class="rounded-lg w-56 h-64 object-cover"/>
+        <div class="flex flex-col gap-3">
+            <div class="flex gap-5 items-end">  
+                <p class="text-light text-3xl">{{user!.name}}</p>
+                <p class="text-medium font-semibold uppercase text-sm  pb-1">{{user!.role | slice : 5}}</p>
+            </div>
+            <span class="flex gap-2 items-center">
+                <fa-icon [icon]="faEmail" class="text-medium"></fa-icon>
+                <p class="text-medium italic">{{user!.email}}</p>
+            </span>
+        </div>
+    </div>
+    <div *ngIf="user!.role === 'ROLE_PATIENT'" class="flex flex-col gap-10 items-start justify-start w-1/2 h-full overflow-auto">
+        <p class="text-light text-2xl italic self-center">ISTORIJA DIJAGNOZA</p>
+        <p *ngIf="diagnosis.length === 0" class="text-medium font-medium">Nema dijagnoza</p>
+        <div *ngIf="diagnosis.length > 0" class="flex flex-col gap-y-5 w-full">
+            <app-diagnosis-entry *ngFor="let diag of diagnosis" [diagnosis]="diag"></app-diagnosis-entry>
+        </div>
+        
+    </div>
 </div>

@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "create": "ng g c components/profile/diagnosis-entry"
   },
   "private": true,
   "dependencies": {
@@ -20,9 +21,13 @@
     "@angular/router": "^16.0.0",
     "@fortawesome/angular-fontawesome": "^0.13.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@swimlane/ngx-datatable": "^20.1.0",
+    "jspreadsheet-ce": "^4.13.3",
+    "jspreadsheet-pro": "^7.12.6",
     "ngx-toastr": "^17.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {

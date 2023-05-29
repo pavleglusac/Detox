@@ -1,6 +1,6 @@
 
 <nav class="bg-transparent">
-    <div class="max-w-screen-2xl flex flex-wrap items-center justify-between px-16">
+    <div class="flex flex-wrap items-center justify-between px-16">
       <a href="/" class="flex items-center py-4">
           <span class="self-center text-2xl font-bold whitespace-nowrap uppercase tracking-widest text-accent font-mono">detox</span>
       </a>
@@ -11,7 +11,7 @@
             <a (click)="navigate(option.link)" class="cursor-pointer hover:text-accent">{{option.title}}</a>
           </li>
           <li class="h-12 flex items-end py-4 px-5">
-            <a class="text-accent cursor-pointer">Log out</a>
+            <a class="text-accent cursor-pointer" (click)="logout()">Odjavi se</a>
           </li>
         </ul>
       </div>

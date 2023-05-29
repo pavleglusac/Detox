@@ -6,7 +6,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { ToastrService } from 'ngx-toastr';
+import { User } from 'src/app/model/user';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserStateService } from 'src/app/services/store/user-state.service';
 import { tokenName } from 'src/app/shared/constants';
 
 @Component({
@@ -34,7 +36,7 @@ export class LoginComponent {
     ]),
   });
 
-  constructor(private authenticationService: AuthService, private toastr: ToastrService, private router: Router) { 
+  constructor(private authenticationService: AuthService, private userStateService: UserStateService, private toastr: ToastrService, private router: Router) {
     document.getElementById('login-email')?.focus();
   }
 
@@ -47,15 +49,26 @@ export class LoginComponent {
       this.email?.value!,
       this.password?.value!,
       (value) => {
-        localStorage.setItem(tokenName, value);
-        this.toastr.success('Login successful');
-        this.router.navigate(['/']);
+        this.loadUser(value.accessToken);
       },
       (error: any) => {
-        this.toastr.error(error.message, 'Login failed');
-        this.errorMessage = 'Incorrect credentials.';
+        this.toastr.error(error.message, 'Neuspešno prijavljivanje');
+        this.errorMessage = 'Neispravni kredencijali.';
       });
-  }
+    }
+    
+    loadUser = (token: string) => {
+    localStorage.setItem(tokenName, token);
+    this.authenticationService.getUser(
+      (user: User) => {      
+          this.userStateService.setUserState(user);
+          this.toastr.success('Uspešna prijava');
+          this.router.navigate(['/']); 
+      },
+      (err: any) => this.toastr.error(err.message)
+    ); 
+
+  };
 
   get email() {
     return this.loginForm.get('email');

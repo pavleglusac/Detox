@@ -1,0 +1,17 @@
+<div class="w-full flex pb-2 border-b border-accent-dark">
+    <div class="flex flex-col gap-1 w-full">
+        <div class="flex justify-between">
+            <p class="text-light italic font-thin">Diagnose {{diagnosis?.id}}</p>
+            <p class="text-medium">{{diagnosis?.startedAt | date}}</p>
+        </div>
+        <div *ngIf="diagnosis?.diagnosisResult === null" class="flex gap-2 items-center">
+            <p class="text-sm font-medium text-medium uppercase">U obradi</p>
+            <fa-icon [icon]="faNotDone" class="text-medium text-xs"></fa-icon>
+        </div>
+        <div *ngIf="diagnosis?.diagnosisResult !== null" class="flex gap-2 items-center">
+            <p class="text-sm font-medium text-accent">{{diagnosis!.diagnosisResult.content}}</p>
+            <fa-icon [icon]="faDone" class="text-medium text-xs"></fa-icon>
+        </div>
+    </div>
+
+</div>

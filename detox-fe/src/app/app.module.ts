@@ -10,7 +10,7 @@ import { AuthInterceptor } from './shared/inrerceptors/http.interceptor';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -21,7 +21,7 @@ import { AuthInterceptor } from './shared/inrerceptors/http.interceptor';
       timeOut: 3000,
       positionClass: 'toast-top-center',
       preventDuplicates: true,
-    }),
+    })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
