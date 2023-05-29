@@ -40,7 +40,7 @@ rule "EPA test positive"
     when
         $symptom: IndustrySymptoms(epaTest == true)
     then
-        insert(new DiagnosisResult("VODONI-SULFID"));
+        insert(new DiagnosisResult("VODONIK-SULFID"));
 end
 
 rule "EPA test negative"
@@ -131,7 +131,7 @@ rule "Amil nitrite test negative"
     when
         $symptom: IndustrySymptoms(amilNitriteTest == false)
     then
-        insert(new Question("Spektofotometrija će pokazati.", "spektofotometrija", "", new ArrayList<String>(Arrays.asList("Uradi spektofotometriju"))));
+        insert(new Question("Spektrofotometrija će pokazati.", "spektofotometrija", "", new ArrayList<String>(Arrays.asList("Uradi spektrofotometriju"))));
 end
 
 rule "Does have CNS depression"

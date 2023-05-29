@@ -69,7 +69,7 @@ public class QueriesService {
             Arrays.asList(
                     new QueryModel("Azbest", "pulmonaryEdema", "false"),
                     new QueryModel("Ozon", "pulmonaryEdema", "true"),
-                    new QueryModel("Vodoni sulfid", "epaTest", "true"),
+                    new QueryModel("Vodonik-sulfid", "epaTest", "true"),
                     new QueryModel("pulmonaryEdema", "epaTest", "false"),
                     new QueryModel("epaTest", "damageToTheRespiratoryTract", "LOWER"),
                     new QueryModel("Gasna hromatografija", "ffpTest", "false"),
@@ -209,9 +209,7 @@ public class QueriesService {
         HashSet<String> potentialEndangeredPatients = new HashSet<>();
         List<Diagnosis> diagnoses = diagnosisRepository.findLastDiagnosisForPatients();
         for (Diagnosis diagnosis: diagnoses) {
-            System.out.println("DIJAGNOZA ZA MAMLAZA");
             if (diagnosis.getSymptoms() instanceof IndustrySymptoms industrySymptoms) {
-                System.out.println("MAMLAZ U INDUSTRIJI");
                 if (testForPresence("Ugljen disulfid", industrySymptoms, kieSession) || testForPresence("Cijanidi", industrySymptoms, kieSession)) {
                     potentialEndangeredPatients.add(diagnosis.getPatient().getEmail());
                 }
