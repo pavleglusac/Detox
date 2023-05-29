@@ -1,0 +1,10 @@
+<div class=" h-full flex flex-col gap-5 justify-start items-end">
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <p class="text-light text-2xl self-start">{{text}}</p>
+    <div class="w-full flex justify-start overflow-auto rounded max-h-80">
+        <div #spreadsheet></div>
+    </div>
+
+    <button class="main-button" (click)="save()">Save</button>
+</div>

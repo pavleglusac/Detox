@@ -3,7 +3,7 @@
     <div class="flex flex-col items-start justify-between overflow-auto max-h-[30rem] max-w-5xl min-w-[64rem]">
 
         <div *ngFor="let option of options" class="flex flex-col justify-center w-full border-b border-accent-dark py-5 rounded-md hover:bg-dark">
-            <div class="flex gap-between text-xl justify-between items-center w-full">
+            <div class="flex gap-between text-xl justify-between items-center w-full px-5 pr-8">
                 <h2 class="flex gap-7 items-end justify-start w-[90%]">
                     <p class=" w-fit pl-3 font-medium text-left text-light cursor-default">
                         {{option.query}}
@@ -15,12 +15,12 @@
                         </p>
                     </div>
                 </h2>
-                <div class="flex gap-10 pr-3">
+                <div class="flex gap-10 pr-3 relative">
                     <button class="main-button-mini" (click)="search(option)">
                         <fa-icon [icon]="faView" class="text-base"></fa-icon>
                     </button>
-                    <fa-icon *ngIf="option.result && !option.show" [icon]="faShowResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer"></fa-icon>
-                    <fa-icon *ngIf="option.result && option.show" [icon]="faHideResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer"></fa-icon>
+                    <fa-icon *ngIf="option.result && !option.show" [icon]="faShowResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer absolute -right-5"></fa-icon>
+                    <fa-icon *ngIf="option.result && option.show" [icon]="faHideResult" (click)="toggleShowResult(option)" class="mt-2 text-base text-medium cursor-pointer absolute -right-5"></fa-icon>
                 </div>
             </div>
             <div [ngClass]="option.show ? 'block' : 'hidden'" class="duration-300 ease-in-out">

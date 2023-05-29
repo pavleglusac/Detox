@@ -25,6 +25,8 @@ public class ControlledSubstancesSymptoms extends Symptoms {
 
     Boolean AffectsCNS = null;
 
+    Boolean CNSDepression = null;
+
     Boolean InDeepComa = null;
 
     Boolean HasLungFibrosis = null;

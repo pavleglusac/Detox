@@ -10,7 +10,7 @@ import { AuthInterceptor } from './shared/inrerceptors/http.interceptor';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,

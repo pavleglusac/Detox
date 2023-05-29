@@ -29,10 +29,10 @@ export class QueryComponent {
   constructor(private queryService: QueryService, private toastr: ToastrService) { }
   
   options: QueryOptions[] = [
-  { query: "Pregled svih testova neophodnih za otkrivanje toksina:", queryInput: "", result: null, show: false, showErrMsg: false, apiPath: '', reqParamName: '' },
+  { query: "Pregled svih testova neophodnih za otkrivanje toksina:", queryInput: "", result: null, show: false, showErrMsg: false, apiPath: 'tests-for-toxin', reqParamName: 'toxin' },
     { query: "Pregled svih daljih testova za određenog pacijenta:", queryInput: "", result: null, show: false, showErrMsg: false, apiPath: 'further-tests',reqParamName: 'username' },
     { query: "Pregled svih pacijenata koji su mogući korisnici teških droga (Kokain, Amfetamini)", queryInput: null, result: null, show: false, apiPath: 'potential-heavy-drugs-users' },
-    { query: "Pregled svih životno ugroženih radnika u industriji (Ugljen-disulfid, Cijanid)", queryInput: null, result: null, show: false, apiPath: '' },
+    { query: "Pregled svih životno ugroženih radnika u industriji (Ugljen-disulfid, Cijanid)", queryInput: null, result: null, show: false, apiPath: 'potential-life-endangered-users' },
   ]
 
   faView: IconDefinition = faSearch;

@@ -1,11 +1,19 @@
-<div class="h-full mt-5">
-    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
-    <div class="w-full flex justify-center overflow-auto">
-        <div #spreadsheet></div>
-    </div>
-    <div>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" (click)="save()">Save</button>
-    </div>
+<div class="w-full h-full flex flex-col gap-5 justify-start p-10 pt-20 items-end backdrop-brightness-150 rounded-3xl">
+    
+    <ul class="flex text-sm w-full font-medium text-center text-medium divide-x divide-accent-dark rounded-lg shadow cursor-pointer mb-8">
+        <li class="w-full h-full" (click)="changeSelect(1)">
+            <p class="w-full bg-dark rounded-l-lg hover:text-accent" [ngClass]="selected === 1 ? 'text-accent text-xl p-3' : 'text-medium p-4'">Gasna hromatografija - supstance</p>
+        </li>
+        <li class="w-full h-full" (click)="changeSelect(2)">
+            <p class="w-full bg-dark hover:text-accent" [ngClass]="selected === 2 ? 'text-accent text-xl p-3' : 'text-medium p-4'">Gasna hromatografija - industrija</p>
+        </li>
+        <li class="w-full h-full" (click)="changeSelect(3)">
+            <p class="w-full bg-dark rounded-r-lg hover:text-accent" [ngClass]="selected === 3 ? 'text-accent text-xl p-3' : 'text-medium p-4'">Spektofotometrija - industrija</p>
+        </li>
+    </ul>
 
+    <div class="px-10" style="width:inherit;">
+        <app-template [columns]="columns" [api]="api" [text]="title"></app-template>
+    </div>
+    
 </div>

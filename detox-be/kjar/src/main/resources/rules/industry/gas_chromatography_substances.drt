@@ -1,0 +1,89 @@
+template header
+  paramsName
+  PCBConcentrationMin
+  PCBConcentrationMax
+  PCBTime
+  benzeneConcentrationMin
+  benzeneConcentrationMax
+  benzeneTime
+  vinylChlorideConcentrationMin
+  vinylChlorideConcentrationMax
+  vinylChlorideTime
+  formaldehydeConcentrationMin
+  formaldehydeConcentrationMax
+  formaldehydeTime
+  tolueneConcentrationMin
+  tolueneConcentrationMax
+  tolueneTime
+
+package rules.industry;
+import com.sbnz.detox.model.gas_chromatography_industry.*;
+import com.sbnz.detox.model.DiagnosisResult;
+
+template "industry-toxins"
+
+rule "Detect Benzene @{paramsName}"
+    when
+        $sumConcentration: Number() from accumulate (
+            $sample: Benzene() over window:time(@{benzeneTime}h),
+            sum($sample.getConcentration())
+        )
+        eval($sumConcentration.doubleValue() <= @{benzeneConcentrationMax})
+        eval($sumConcentration.doubleValue() > @{benzeneConcentrationMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} BENZEN"));
+        System.out.printf("Detected Benzene: Sum of Concentration over last 2 hours = %.2f%n", $sumConcentration);
+end
+
+rule "Detect Toluene @{paramsName}"
+    when
+        $avgConcentration: Number() from accumulate (
+            $sample: Toluene() over window:time(@{tolueneTime}h),
+            average($sample.getConcentration())
+        )
+        eval($avgConcentration.doubleValue() <= @{tolueneConcentrationMax})
+        eval($avgConcentration.doubleValue() > @{tolueneConcentrationMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} TOLUEN"));
+        System.out.printf("Detected Toluene: Average Concentration over last 3 hours = %.2f%n", $avgConcentration);
+end
+
+rule "Detect Formaldehyde @{paramsName}"
+    when
+        $maxConcentration: Number() from accumulate (
+            $sample: Formaldehyde() over window:time(@{formaldehydeTime}h),
+            max($sample.getConcentration())
+        )
+        eval($maxConcentration.doubleValue() <= @{formaldehydeConcentrationMax})
+        eval($maxConcentration.doubleValue() > @{formaldehydeConcentrationMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} FORMALDEHID"));
+        System.out.printf("Detected Formaldehyde: Maximum Concentration over last 1 hour = %.2f%n", $maxConcentration);
+end
+
+rule "Detect PCB @{paramsName}"
+    when
+        $minConcentration: Number() from accumulate (
+            $sample: PCB() over window:time(@{PCBTime}h),
+            min($sample.getConcentration())
+        )
+        eval($minConcentration.doubleValue() <= @{PCBConcentrationMax})
+        eval($minConcentration.doubleValue() > @{PCBConcentrationMin})
+    then
+        insert(new DiagnosisResult("@{paramsName} POLIHLOROVANI BIFENILI"));
+        System.out.printf("Detected PCB: Minimum Concentration over last 4 hours = %.2f%n", $minConcentration);
+end
+
+rule "Detect Vinyl Chloride @{paramsName}"
+    when
+        $countSamples: Number() from accumulate (
+            $sample: VinylChloride(getConcentration() > @{vinylChlorideConcentrationMin}, getConcentration() <= @{vinylChlorideConcentrationMax}) over window:time(@{vinylChlorideTime}h),
+            count($sample)
+        )
+        eval($countSamples.intValue() >= 3)
+    then
+        insert(new DiagnosisResult("@{paramsName} VINIL HLORID"));
+        System.out.printf("Detected Vinyl Chloride: %d samples with concentration > 100 over last 6 hours%n", $countSamples);
+end
+
+end template

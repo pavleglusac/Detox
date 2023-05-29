@@ -1,3 +1,10 @@
+export interface DiagnosisEntry {
+    startedAt: string;
+    id: number;
+    diagnosisResult: {content: string},
+    symptoms: any;
+}
+
 export class Diagnosis {
     id: number = 0;
     result: string = "";

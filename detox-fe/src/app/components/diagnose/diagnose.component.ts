@@ -18,18 +18,20 @@ import { AnswersPipe } from 'src/app/shared/pipes/answers.pipe';
   imports: [CommonModule, ReactiveFormsModule, FormsModule, FontAwesomeModule, AnswersPipe],
 })
 export class DiagnoseComponent{
-  @ViewChild('scrollMarker') private scrollMarker!: ElementRef;
+  @ViewChild('scrollMarker') private scrollMarker?: ElementRef;
   faUserEmail: IconDefinition = faUser;
   faEnd: IconDefinition = faX;
   faReset: IconDefinition = faRepeat;
 
   diagnosis: Diagnosis | null = null;
-  loginForm = new FormGroup({
+  form = new FormGroup({
     email: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
     ])})
   questionAnswer: string = '';
+
+  showTestButton = true;
 
   constructor(private diagnoseService: DiagnoseService, private toastr: ToastrService, private diagnosisStateService: DiagnosisStateService) { 
     diagnosisStateService.getDiagnosisState().subscribe((diagnosis: Diagnosis | null) => {
@@ -38,8 +40,8 @@ export class DiagnoseComponent{
   }
 
   onSubmit = () => {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     };
     this.diagnoseService.startDiagnosis(
@@ -89,27 +91,65 @@ export class DiagnoseComponent{
       );
   }
 
+  startTest = (question: Question) => {
+    let api = this.diagnosis?.type === DiagnosisType.INDUSTRY ? 'industry' : 'controlled-substances';
+    question.type === 'gasna-hromatografija' ? this.diagnoseService.startGasChromatography(
+      this.diagnosis!.id,
+      api,
+      (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
+      (error: any)=>{this.toastr.error(error.message);}
+      ) :
+      this.diagnoseService.startSpectrophotometry(
+        this.diagnosis!.id,
+        (newQuestion: Question)=> { this.updateDiagnosis(question, newQuestion);},
+        (error: any)=>{this.toastr.error(error.message);}
+        )
+  }
+
   updateDiagnosis(question: Question, newQuestion: Question): void {
     question.answered = this.questionAnswer;
     this.diagnosis!.updateQuestion(question);
     this.diagnosis!.questions.push(newQuestion);
     this.diagnosisStateService.setDiagnosisState(this.diagnosis!);
     this.questionAnswer = '';
-    this.scrollMarker.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.scrollMarker!.nativeElement.scrollIntoView({ behavior: 'smooth' });
     if (newQuestion.responseType === ResponseType.RESULT || !newQuestion.answers) {
+      this.showTestButton = false;
       this.toastr.success(newQuestion.content, 'Rezultat');
     }
   }
 
+  resetDaignosing = () => {
+    this.diagnoseService.resetSymptoms(
+      this.diagnosis!.id,
+      (value: any) => {
+        this.questionAnswer = '';
+        this.showTestButton = true;
+        this.diagnosis!.questions = [new Question("Da li pacijent radi u industriji?", ["Da", "Ne"], '')];
+        this.diagnosisStateService.setDiagnosisState(this.diagnosis!);
+      },
+      (error: any) => {this.toastr.error(error.message);}
+    );
+  }
+
+  endDiagnosing = () => {
+    this.diagnoseService.endDiagnosis(
+      this.diagnosis!.id,
+      (value: any) => {this.startAgain()},
+      (error: any) => {this.toastr.error(error.message);}
+    );
+  }
+
   startAgain = () => {
     this.questionAnswer = '';
+    this.showTestButton = true;
     this.diagnosis = null;
-    this.loginForm.reset();
+    this.form.reset();
     this.diagnosisStateService.clearDiagnosisState();
   }
 
   get email() {
-    return this.loginForm.get('email');
+    return this.form.get('email');
   }
 
   get answeredQuestions() {

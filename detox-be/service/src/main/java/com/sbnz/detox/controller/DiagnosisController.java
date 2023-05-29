@@ -40,4 +40,14 @@ public class DiagnosisController {
         return diagnosisService.setSymptomsType(diagnosisId, symptomsType);
     }
 
+    @PatchMapping("/reset-symptoms")
+    public void resetSymptoms(@RequestParam("diagnosisId") Long diagnosisId) {
+        diagnosisService.resetSymptoms(diagnosisId);
+    }
+
+    @PatchMapping("/end-diagnosis")
+    public void endDiagnosis(@RequestParam("diagnosisId") Long diagnosisId) {
+        diagnosisService.endDiagnosis(diagnosisId);
+    }
+
 }

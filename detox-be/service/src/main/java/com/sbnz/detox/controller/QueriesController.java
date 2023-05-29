@@ -22,9 +22,22 @@ public class QueriesController {
         return queriesService.getPotentialHeavyDrugsUsers();
     }
 
+    @GetMapping("/potential-life-endangered-users")
+    public List<String> getPotentialLifeEndangeredUsers() throws IllegalAccessException {
+        return queriesService.getPotentialLifeEndangered();
+    }
+
     @GetMapping("/further-tests")
     public List<String> getFurtherTests(@RequestParam("username") String username) throws IllegalAccessException {
         return queriesService.furtherTestsForUser(username);
     }
+
+    @GetMapping("/tests-for-toxin")
+    public List<String> getTestsForToxin(@RequestParam("toxin") String toxin) {
+        System.out.println("Ovo je toxin: " + toxin);
+        return queriesService.testsNeededForToxin(toxin);
+    }
+
+
     
 }
